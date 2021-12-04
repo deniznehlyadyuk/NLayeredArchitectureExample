@@ -59,13 +59,25 @@ namespace Business.Utils
         public async Task<TEntityGetDto> GetByIdAsync(Guid id)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
-            return Mapper.Map<TEntity, TEntityGetDto>(entity);
+            return await ConvertToDtoForGetAsync(entity);
         }
 
         public async Task<ICollection<TEntityGetDto>> GetAllAsync()
         {
             var entities = await BaseEntityRepository.GetListAsync();
-            return Mapper.Map<List<TEntity>, List<TEntityGetDto>>(entities.ToList());
+            var entityGetDtos = new List<TEntityGetDto>();
+
+            foreach (var entity in entities.ToList())
+            {
+                entityGetDtos.Add(await ConvertToDtoForGetAsync(entity));
+            }
+
+            return entityGetDtos;
+        }
+
+        public virtual async Task<TEntityGetDto> ConvertToDtoForGetAsync(TEntity input)
+        {
+            return Mapper.Map<TEntity, TEntityGetDto>(input);
         }
     }
 }
