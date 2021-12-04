@@ -12,7 +12,10 @@ namespace Business
             CreateMap<StudentCreateDto, Student>();
             CreateMap<Student, StudentGetDto>();
             CreateMap<StudentCreateDto, Person>();
+            CreateMap<StudentUpdateDto, Person>();
             CreateMap<StudentCreateDto, StudentGetDto>();
+            CreateMap<Person, Student>();
+            CreateMap<Person, StudentGetDto>();
             
             CreateMap<LessonDto, Lesson>();
             CreateMap<Lesson, LessonGetDto>();

@@ -19,6 +19,19 @@ namespace Business.Concrete
             _personRepository = unitOfWork.GenerateRepository<Person>();
         }
 
+        public override async Task<StudentGetDto> ConvertToDtoForGetAsync(Student input)
+        {
+            var person = await _personRepository.GetAsync(x => x.Id == input.PersonId);
+
+            if (person == null)
+            {
+                return Mapper.Map<Student, StudentGetDto>(input);
+            }
+
+            var studentGetDto = Mapper.Map<Student, StudentGetDto>(input);
+            return Mapper.Map(person, studentGetDto);
+        }
+
         public override async Task<StudentGetDto> AddAsync(StudentCreateDto input)
         {
             var person = Mapper.Map<StudentCreateDto, Person>(input);
@@ -45,6 +58,29 @@ namespace Business.Concrete
                 await UnitOfWork.RollbackTransactionAsync();
                 throw new Exception(ex.Message);
             }
+        }
+
+        public override async Task<StudentGetDto> UpdateAsync(Guid id, StudentUpdateDto input)
+        {
+            var student = await BaseEntityRepository.GetAsync(x => x.Id == id);
+
+            if (student == null)
+            {
+                return null;
+            }
+
+            var person = await _personRepository.GetAsync(x => x.Id == student.PersonId);
+
+            if (person == null)
+            {
+                return null;
+            }
+
+            person = Mapper.Map(input, person);
+
+            await _personRepository.UpdateAsync(person);
+
+            return await GetByIdAsync(id);
         }
     }
 }
