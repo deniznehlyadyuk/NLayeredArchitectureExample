@@ -27,14 +27,14 @@ namespace Business.Utils
             BaseEntityRepository = UnitOfWork.GenerateRepository<TEntity>();
         }
 
-        public async Task<TEntityGetDto> Add(TEntityDto input)
+        public async Task<TEntityGetDto> AddAsync(TEntityDto input)
         {
             var entity = Mapper.Map<TEntityDto, TEntity>(input);
             await BaseEntityRepository.AddAsync(entity);
             return Mapper.Map<TEntity, TEntityGetDto>(entity);
         }
 
-        public async Task<TEntityGetDto> Update(Guid id, TEntityDto input)
+        public async Task<TEntityGetDto> UpdateAsync(Guid id, TEntityDto input)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
 
@@ -50,18 +50,18 @@ namespace Business.Utils
             return Mapper.Map<TEntity, TEntityGetDto>(updatedEntity);
         }
 
-        public async Task DeleteById(Guid id)
+        public async Task DeleteByIdAsync(Guid id)
         {
             await BaseEntityRepository.DeleteByIdAsync(id);
         }
 
-        public async Task<TEntityGetDto> GetById(Guid id)
+        public async Task<TEntityGetDto> GetByIdAsync(Guid id)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
             return Mapper.Map<TEntity, TEntityGetDto>(entity);
         }
 
-        public async Task<ICollection<TEntityGetDto>> GetAll()
+        public async Task<ICollection<TEntityGetDto>> GetAllAsync()
         {
             var entities = await BaseEntityRepository.GetListAsync();
             return Mapper.Map<List<TEntity>, List<TEntityGetDto>>(entities.ToList());

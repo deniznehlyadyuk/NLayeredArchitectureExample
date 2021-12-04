@@ -10,10 +10,10 @@ namespace Business.Utils
         where TEntityGetDto : IEntityGetDto, new()
         where TEntityDto : IDto, new()
     {
-        Task<TEntityGetDto> Add(TEntityDto input);
-        Task<TEntityGetDto?> Update(Guid id, TEntityDto input);
-        Task DeleteById(Guid id);
-        Task<TEntityGetDto> GetById(Guid id);
-        Task<ICollection<TEntityGetDto>> GetAll();
+        Task<TEntityGetDto> AddAsync(TEntityDto input);
+        Task<TEntityGetDto?> UpdateAsync(Guid id, TEntityDto input);
+        Task DeleteByIdAsync(Guid id);
+        Task<TEntityGetDto> GetByIdAsync(Guid id);
+        Task<ICollection<TEntityGetDto>> GetAllAsync();
     }
 }
