@@ -18,5 +18,6 @@ namespace Domain
         public DateTime BornDate { get; set; }
         
         public virtual Student Student { get; set; }
+        public virtual Teacher Teacher { get; set; }
     }
 }
