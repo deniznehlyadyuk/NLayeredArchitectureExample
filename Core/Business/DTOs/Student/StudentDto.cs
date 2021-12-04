@@ -6,7 +6,7 @@ namespace Core.Business.DTOs.Student
     {
         public string FullName { get; set; }
         public string IdentityNumber { get; set; }
-        public DateTime Type { get; set; }
+        public DateTime BornDate { get; set; }
         public string SchoolNumber { get; set; }
     }
 }

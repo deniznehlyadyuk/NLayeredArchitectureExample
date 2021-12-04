@@ -11,7 +11,9 @@ namespace Business
         {
             CreateMap<StudentDto, Student>();
             CreateMap<Student, StudentGetDto>();
-
+            CreateMap<StudentDto, Person>();
+            CreateMap<StudentDto, StudentGetDto>();
+            
             CreateMap<LessonDto, Lesson>();
             CreateMap<Lesson, LessonGetDto>();
         }

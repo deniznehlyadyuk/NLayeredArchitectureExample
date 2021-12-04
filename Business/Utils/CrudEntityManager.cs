@@ -27,14 +27,14 @@ namespace Business.Utils
             BaseEntityRepository = UnitOfWork.GenerateRepository<TEntity>();
         }
 
-        public async Task<TEntityGetDto> AddAsync(TEntityDto input)
+        public virtual async Task<TEntityGetDto> AddAsync(TEntityDto input)
         {
             var entity = Mapper.Map<TEntityDto, TEntity>(input);
             await BaseEntityRepository.AddAsync(entity);
             return Mapper.Map<TEntity, TEntityGetDto>(entity);
         }
 
-        public async Task<TEntityGetDto> UpdateAsync(Guid id, TEntityDto input)
+        public virtual async Task<TEntityGetDto> UpdateAsync(Guid id, TEntityDto input)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
 
@@ -50,7 +50,7 @@ namespace Business.Utils
             return Mapper.Map<TEntity, TEntityGetDto>(updatedEntity);
         }
 
-        public async Task DeleteByIdAsync(Guid id)
+        public virtual async Task DeleteByIdAsync(Guid id)
         {
             await BaseEntityRepository.DeleteByIdAsync(id);
         }
