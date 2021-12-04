@@ -16,5 +16,7 @@ namespace Domain
         
         [Required]
         public DateTime BornDate { get; set; }
+        
+        public virtual Student Student { get; set; }
     }
 }
