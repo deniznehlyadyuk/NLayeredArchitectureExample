@@ -40,7 +40,8 @@ namespace WebAPI
             });
             services.AddScoped<IStudentService, StudentManager>();
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
-            
+            services.AddScoped<ILessonService, LessonManager>();
+
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new SchoolAutoMapperProfile()); });
             var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
