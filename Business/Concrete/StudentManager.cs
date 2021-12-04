@@ -10,7 +10,7 @@ using Domain;
 
 namespace Business.Concrete
 {
-    public class StudentManager : CrudEntityManager<Student, StudentGetDto, StudentDto>, IStudentService
+    public class StudentManager : CrudEntityManager<Student, StudentGetDto, StudentCreateDto, StudentUpdateDto>, IStudentService
     {
         private readonly IEntityRepository<Person> _personRepository;
         
@@ -19,10 +19,10 @@ namespace Business.Concrete
             _personRepository = unitOfWork.GenerateRepository<Person>();
         }
 
-        public override async Task<StudentGetDto> AddAsync(StudentDto input)
+        public override async Task<StudentGetDto> AddAsync(StudentCreateDto input)
         {
-            var person = Mapper.Map<StudentDto, Person>(input);
-            var student = Mapper.Map<StudentDto, Student>(input);
+            var person = Mapper.Map<StudentCreateDto, Person>(input);
+            var student = Mapper.Map<StudentCreateDto, Student>(input);
 
             await UnitOfWork.BeginTransactionAsync();
             
@@ -33,7 +33,7 @@ namespace Business.Concrete
 
                 await BaseEntityRepository.AddAsync(student);
 
-                var studentGetDto = Mapper.Map<StudentDto, StudentGetDto>(input);
+                var studentGetDto = Mapper.Map<StudentCreateDto, StudentGetDto>(input);
                 studentGetDto.Id = student.Id;
 
                 await UnitOfWork.CommitTransactionAsync();

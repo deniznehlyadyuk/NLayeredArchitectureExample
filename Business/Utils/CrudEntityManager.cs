@@ -11,10 +11,11 @@ using DataAccess;
 
 namespace Business.Utils
 {
-    public class CrudEntityManager<TEntity, TEntityGetDto, TEntityDto> : ICrudEntityService<TEntityGetDto, TEntityDto>
+    public class CrudEntityManager<TEntity, TEntityGetDto, TEntityCreateDto, TEntityUpdateDto> : ICrudEntityService<TEntityGetDto, TEntityCreateDto, TEntityUpdateDto>
         where TEntity : BaseEntity, new()
         where TEntityGetDto : IEntityGetDto, new()
-        where TEntityDto : IDto, new()
+        where TEntityCreateDto : IDto, new()
+        where TEntityUpdateDto : IDto, new()
     {
         protected readonly IMapper Mapper;
         protected readonly IUnitOfWorks UnitOfWork;
@@ -27,14 +28,14 @@ namespace Business.Utils
             BaseEntityRepository = UnitOfWork.GenerateRepository<TEntity>();
         }
 
-        public virtual async Task<TEntityGetDto> AddAsync(TEntityDto input)
+        public virtual async Task<TEntityGetDto> AddAsync(TEntityCreateDto input)
         {
-            var entity = Mapper.Map<TEntityDto, TEntity>(input);
+            var entity = Mapper.Map<TEntityCreateDto, TEntity>(input);
             await BaseEntityRepository.AddAsync(entity);
             return Mapper.Map<TEntity, TEntityGetDto>(entity);
         }
 
-        public virtual async Task<TEntityGetDto> UpdateAsync(Guid id, TEntityDto input)
+        public virtual async Task<TEntityGetDto> UpdateAsync(Guid id, TEntityUpdateDto input)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
 

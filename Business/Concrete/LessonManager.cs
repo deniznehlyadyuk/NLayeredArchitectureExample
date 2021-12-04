@@ -7,7 +7,7 @@ using Domain;
 
 namespace Business.Concrete
 {
-    public class LessonManager : CrudEntityManager<Lesson, LessonGetDto, LessonDto>, ILessonService
+    public class LessonManager : CrudEntityManager<Lesson, LessonGetDto, LessonDto, LessonDto>, ILessonService
     {
         public LessonManager(IUnitOfWorks unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

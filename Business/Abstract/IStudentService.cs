@@ -3,7 +3,7 @@ using Core.Business.DTOs.Student;
 
 namespace Business.Abstract
 {
-    public interface IStudentService : ICrudEntityService<StudentGetDto, StudentDto>
+    public interface IStudentService : ICrudEntityService<StudentGetDto, StudentCreateDto, StudentUpdateDto>
     {
         
     }

@@ -9,10 +9,10 @@ namespace Business
     {
         public SchoolAutoMapperProfile()
         {
-            CreateMap<StudentDto, Student>();
+            CreateMap<StudentCreateDto, Student>();
             CreateMap<Student, StudentGetDto>();
-            CreateMap<StudentDto, Person>();
-            CreateMap<StudentDto, StudentGetDto>();
+            CreateMap<StudentCreateDto, Person>();
+            CreateMap<StudentCreateDto, StudentGetDto>();
             
             CreateMap<LessonDto, Lesson>();
             CreateMap<Lesson, LessonGetDto>();

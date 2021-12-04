@@ -3,7 +3,7 @@ using Core.Business.DTOs.Lesson;
 
 namespace Business.Abstract
 {
-    public interface ILessonService : ICrudEntityService<LessonGetDto, LessonDto>
+    public interface ILessonService : ICrudEntityService<LessonGetDto, LessonDto, LessonDto>
     {
         
     }
