@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Business;
+using Business.Abstract;
+using Business.Concrete;
 using DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +38,12 @@ namespace WebAPI
             {
                 options.UseNpgsql("Host=localhost;Port=5432;User ID=postgres;password=0B861439fCa66;Database=SchoolProject");
             });
+            services.AddScoped<IStudentService, StudentManager>();
+            services.AddScoped<IUnitOfWorks, UnitOfWork>();
+            
+            var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new SchoolAutoMapperProfile()); });
+            var mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
