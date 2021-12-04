@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Domain;
@@ -15,5 +16,7 @@ namespace Domain
         [MaxLength(6)]
         [Required]
         public string SchoolNumber { get; set; }
+
+        public virtual ICollection<StudentScore> StudentScores { get; set; }
     }
 }
