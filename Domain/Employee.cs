@@ -16,5 +16,7 @@ namespace Domain
         [Required]
         public Guid AddressId { get; set; }
         public virtual Address Address { get; set; }
+
+        public virtual Doctor Doctor { get; set; }
     }
 }
