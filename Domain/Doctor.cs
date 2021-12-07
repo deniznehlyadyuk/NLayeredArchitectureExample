@@ -15,5 +15,6 @@ namespace Domain
 
         public virtual SecretaryDoctor SecretaryDoctors { get; set; }
         public virtual ICollection<Reservation> Reservations { get; set; }
+        public virtual ICollection<PhysicalExamination> PhysicalExaminations { get; set; }
     }
 }
