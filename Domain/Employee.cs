@@ -19,5 +19,6 @@ namespace Domain
 
         public virtual Doctor Doctor { get; set; }
         public virtual Housekeeper Housekeeper { get; set; }
+        public virtual Secretary Secretary { get; set; }
     }
 }
