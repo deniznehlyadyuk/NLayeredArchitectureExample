@@ -14,5 +14,6 @@ namespace Domain
         public string Phone { get; set; }
 
         public virtual Employee Employee { get; set; }
+        public virtual Patient Patient { get; set; }
     }
 }
