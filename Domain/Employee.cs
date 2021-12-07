@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Domain;
@@ -20,5 +21,6 @@ namespace Domain
         public virtual Doctor Doctor { get; set; }
         public virtual Housekeeper Housekeeper { get; set; }
         public virtual Secretary Secretary { get; set; }
+        public virtual ICollection<EmployeePermits> EmployeePermits { get; set; }
     }
 }
