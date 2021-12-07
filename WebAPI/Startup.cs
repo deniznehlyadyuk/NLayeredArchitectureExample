@@ -27,7 +27,7 @@ namespace WebAPI
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "WebAPI", Version = "v1"}); });
             services.AddDbContext<ReservationContext>(options =>
             {
-                options.UseNpgsql("Host=localhost;Port=5432;User ID=postgres;password=0B861439fCa66;Database=SchoolProject");
+                options.UseNpgsql("Host=localhost;Port=5432;User ID=postgres;password=0B861439fCa66;Database=ReservationProject");
             });
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
 
