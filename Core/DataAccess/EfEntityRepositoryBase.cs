@@ -39,12 +39,6 @@ namespace Core.DataAccess
             await Context.SaveChangesAsync();
         }
 
-        public async Task DeleteByIdAsync(Guid id)
-        {
-            var entity = DbSet.Find(id);
-            await DeleteAsync(entity);
-        }
-
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await DbSet.Where(predicate).FirstOrDefaultAsync();

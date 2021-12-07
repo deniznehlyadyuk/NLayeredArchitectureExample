@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Business.DTOs;
-using Core.Business.DTOs.Student;
 using Core.DataAccess;
 using Core.Domain;
+using Core.Utils.Result;
 using DataAccess;
 
 namespace Business.Utils
@@ -28,41 +28,60 @@ namespace Business.Utils
             BaseEntityRepository = UnitOfWork.GenerateRepository<TEntity>();
         }
 
-        public virtual async Task<TEntityGetDto> AddAsync(TEntityCreateDto input)
+        public virtual async Task<IDataResult<TEntityGetDto>> AddAsync(TEntityCreateDto input)
         {
             var entity = Mapper.Map<TEntityCreateDto, TEntity>(input);
             await BaseEntityRepository.AddAsync(entity);
-            return Mapper.Map<TEntity, TEntityGetDto>(entity);
+            var entityGetDto = Mapper.Map<TEntity, TEntityGetDto>(entity);
+            return new SuccessDataResult<TEntityGetDto>(entityGetDto);
         }
 
-        public virtual async Task<TEntityGetDto> UpdateAsync(Guid id, TEntityUpdateDto input)
+        public virtual async Task<IDataResult<TEntityGetDto>> UpdateAsync(Guid id, TEntityUpdateDto input)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
 
             if (entity == null)
             {
-                return new TEntityGetDto();
+                return new ErrorDataResult<TEntityGetDto>($"'{id}' id'li '{typeof(TEntity).Name}' entity'si bulunamadı.");
             }
 
             var updatedEntity = Mapper.Map(input, entity);
 
             await BaseEntityRepository.UpdateAsync(updatedEntity);
 
-            return Mapper.Map<TEntity, TEntityGetDto>(updatedEntity);
+            var entityGetDto = Mapper.Map<TEntity, TEntityGetDto>(updatedEntity);
+
+            return new SuccessDataResult<TEntityGetDto>(entityGetDto);
         }
 
-        public virtual async Task DeleteByIdAsync(Guid id)
+        public virtual async Task<IResult> DeleteByIdAsync(Guid id)
         {
-            await BaseEntityRepository.DeleteByIdAsync(id);
+            var entity = await BaseEntityRepository.GetAsync(x=>x.Id == id);
+
+            if (entity == null)
+            {
+                return new ErrorResult($"'{id}' id'li '{typeof(TEntity).Name}' entitysi bulunamadı.");
+            }
+
+            await BaseEntityRepository.DeleteAsync(entity);
+
+            return new SuccessResult($"'{typeof(TEntity).Name}' entitysi silindi.");
         }
 
-        public async Task<TEntityGetDto> GetByIdAsync(Guid id)
+        public async Task<IDataResult<TEntityGetDto>> GetByIdAsync(Guid id)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
-            return await ConvertToDtoForGetAsync(entity);
+
+            if (entity == null)
+            {
+                return new ErrorDataResult<TEntityGetDto>($"'{id}' id'li '{typeof(TEntity).Name}' entity'si bulunamadı.");
+            }
+            
+            var entityGetDto = await ConvertToDtoForGetAsync(entity);
+            return new SuccessDataResult<TEntityGetDto>(entityGetDto);
         }
 
-        public async Task<ICollection<TEntityGetDto>> GetAllAsync()
+        public async Task<IDataResult<ICollection<TEntityGetDto>>> GetAllAsync()
         {
             var entities = await BaseEntityRepository.GetListAsync();
             var entityGetDtos = new List<TEntityGetDto>();
@@ -72,7 +91,7 @@ namespace Business.Utils
                 entityGetDtos.Add(await ConvertToDtoForGetAsync(entity));
             }
 
-            return entityGetDtos;
+            return new SuccessDataResult<ICollection<TEntityGetDto>>(entityGetDtos);
         }
 
         public virtual async Task<TEntityGetDto> ConvertToDtoForGetAsync(TEntity input)
