@@ -19,5 +19,7 @@ namespace Domain
         
         [Required]
         public int RoomNo { get; set; }
+
+        public virtual Employee Employee { get; set; }
     }
 }
