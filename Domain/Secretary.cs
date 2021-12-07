@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Domain;
@@ -14,5 +15,7 @@ namespace Domain
 
         [Required]
         public int LandPhoneCode { get; set; }
+
+        public virtual ICollection<SecretaryDoctor> SecretaryDoctors { get; set; }
     }
 }

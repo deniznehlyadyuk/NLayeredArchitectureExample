@@ -11,5 +11,7 @@ namespace Domain
         [Required]
         public Guid EmployeeId { get; set; }
         public virtual Employee Employee { get; set; }
+
+        public virtual SecretaryDoctor SecretaryDoctors { get; set; }
     }
 }
