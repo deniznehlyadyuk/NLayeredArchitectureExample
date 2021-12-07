@@ -18,5 +18,6 @@ namespace Domain
         public virtual Address Address { get; set; }
 
         public virtual Doctor Doctor { get; set; }
+        public virtual Housekeeper Housekeeper { get; set; }
     }
 }
