@@ -6,16 +6,16 @@ namespace DataAccess
 {
     public class UnitOfWork : IUnitOfWorks
     {
-        private readonly SchoolContext _context;
+        private readonly ReservationContext _context;
 
-        public UnitOfWork(SchoolContext context)
+        public UnitOfWork(ReservationContext context)
         {
             _context = context;
         }
 
         public IEntityRepository<TEntity> GenerateRepository<TEntity>() where TEntity : BaseEntity, new()
         {
-            return new EfEntityRepositoryBase<TEntity, SchoolContext>(_context);
+            return new EfEntityRepositoryBase<TEntity, ReservationContext>(_context);
         }
 
         public async Task BeginTransactionAsync()
