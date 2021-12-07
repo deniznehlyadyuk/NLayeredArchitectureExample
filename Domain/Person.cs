@@ -13,6 +13,9 @@ namespace Domain
         [MaxLength(10)] //örnek: 5531173456
         public string Phone { get; set; }
 
+        [Required]
+        public string IdentityNumber { get; set; }
+
         public virtual Employee Employee { get; set; }
         public virtual Patient Patient { get; set; }
     }

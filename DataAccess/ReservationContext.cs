@@ -20,6 +20,7 @@ namespace DataAccess
             modelBuilder.Entity<Person>(x =>
             {
                 x.ToTable("persons");
+                x.HasIndex(y => y.IdentityNumber).IsUnique();
             });
             
             modelBuilder.Entity<Patient>(x =>
