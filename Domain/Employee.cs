@@ -21,6 +21,7 @@ namespace Domain
         public virtual Doctor Doctor { get; set; }
         public virtual Housekeeper Housekeeper { get; set; }
         public virtual Secretary Secretary { get; set; }
+        public virtual EmployeeSalary EmployeeSalary { get; set; }
         public virtual ICollection<EmployeePermits> EmployeePermits { get; set; }
     }
 }
