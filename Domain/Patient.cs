@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Domain;
@@ -11,5 +12,7 @@ namespace Domain
         [Required]
         public Guid PersonId { get; set; }
         public virtual Person Person { get; set; }
+
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }
