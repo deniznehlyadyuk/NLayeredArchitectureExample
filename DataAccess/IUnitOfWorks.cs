@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Core.DataAccess;
 using Core.Domain;
+using DataAccess.Abstract;
 
 namespace DataAccess
 {
@@ -10,5 +11,6 @@ namespace DataAccess
         Task BeginTransactionAsync();
         Task RollbackTransactionAsync();
         Task CommitTransactionAsync();
+        IDoctorRepository DoctorRepository { get; }
     }
 }

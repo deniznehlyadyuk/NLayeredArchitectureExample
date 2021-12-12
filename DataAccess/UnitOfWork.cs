@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using Core.DataAccess;
 using Core.Domain;
+using DataAccess.Abstract;
+using DataAccess.Concrete;
 
 namespace DataAccess
 {
@@ -31,6 +33,21 @@ namespace DataAccess
         public async Task CommitTransactionAsync()
         {
             await _context.Database.CommitTransactionAsync();
+        }
+
+        private IDoctorRepository _doctorRepository;
+
+        public IDoctorRepository DoctorRepository
+        {
+            get
+            {
+                if (_doctorRepository == null)
+                {
+                    _doctorRepository = new DoctorRepository(_context);
+                }
+
+                return _doctorRepository;
+            }
         }
     }
 }
