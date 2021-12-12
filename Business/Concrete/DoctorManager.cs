@@ -115,11 +115,11 @@ namespace Business.Concrete
                 return new ErrorDataResult<DoctorGetDto>($"'{id}' id'li Doctor entity'si bulunamadı.");
             }
 
-            await UnitOfWork.BeginTransactionAsync();
-
             var address = doctor.Employee.Address;
             var person = doctor.Employee.Person;
             
+            await UnitOfWork.BeginTransactionAsync();
+
             try
             {
                 await _addressRepository.DeleteAsync(address);
