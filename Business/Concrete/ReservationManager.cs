@@ -45,20 +45,6 @@ namespace Business.Concrete
             var person = Mapper.Map<ReservationCreateDto, Person>(input);
             var patient = await UnitOfWork.PatientRepository.GetByIdentityNumber(input.PatientInfo.IdentityNumber);
 
-            var status = await ResDateControl(input.DoctorId, input.ResDate);
-
-            switch (status)
-            {
-                case ResDateStatus.Ok:
-                    break;
-                case ResDateStatus.BusyForDateAndHour:
-                    return new ErrorDataResult<ReservationGetDto>("Doktor'un girilen tarih & saat için rezervasyonu mevcut.");
-                case ResDateStatus.BusyForDate:
-                    return new ErrorDataResult<ReservationGetDto>("Doktora bir gün için 10 adetten fazla randevu tanımlanamaz.");
-                case ResDateStatus.LessThan15Min:
-                    return new ErrorDataResult<ReservationGetDto>("Girilen tarih & saat bilgisi, bir önceki randevudan minimum 15 dk sonra olmalıdır.");
-            }
-            
             await UnitOfWork.BeginTransactionAsync();
 
             try
@@ -68,6 +54,14 @@ namespace Business.Concrete
                     await _personRepository.AddAsync(person);
                     patient = new Patient { PersonId = person.Id };
                     await UnitOfWork.PatientRepository.AddAsync(patient);
+                }
+                
+                var result = await CanBeReservationCreateOrUpdate(input.DoctorId, patient.Id, input.ResDate);
+
+                if (!result.Success)
+                {
+                    await UnitOfWork.RollbackTransactionAsync();
+                    return new ErrorDataResult<ReservationGetDto>(result.Message);
                 }
                 
                 return await base.AddAsync(input, new Dictionary<string, object>
@@ -92,20 +86,6 @@ namespace Business.Concrete
                 return new ErrorDataResult<ReservationGetDto>($"'{id}' id'li Reservation entity'si bulunamadı.");
             }
 
-            var status = await ResDateControl(input.DoctorId, input.ResDate);
-
-            switch (status)
-            {
-                case ResDateStatus.Ok:
-                    break;
-                case ResDateStatus.BusyForDateAndHour:
-                    return new ErrorDataResult<ReservationGetDto>("Doktor'un girilen tarih & saat için rezervasyonu mevcut.");
-                case ResDateStatus.BusyForDate:
-                    return new ErrorDataResult<ReservationGetDto>("Doktora bir gün için 10 adetten fazla rezervasyon tanımlanamaz.");
-                case ResDateStatus.LessThan15Min:
-                    return new ErrorDataResult<ReservationGetDto>("Girilen tarih & saat bilgisi, bir önceki randevudan minimum 15 dk sonra olmalıdır.");
-            }
-            
             var patientId = reservation.PatientId;
             var patientPersonId = reservation.Patient.PersonId;
             var patientIdentityNumber = reservation.Patient.Person.IdentityNumber;
@@ -113,7 +93,14 @@ namespace Business.Concrete
             var person = Mapper.Map<ReservationUpdateDto, Person>(input);
             person.Id = patientPersonId;
             person.IdentityNumber = patientIdentityNumber;
+            
+            var result = await CanBeReservationCreateOrUpdate(input.DoctorId, patientId, input.ResDate);
 
+            if (!result.Success)
+            {
+                return new ErrorDataResult<ReservationGetDto>(result.Message);
+            }
+            
             await UnitOfWork.BeginTransactionAsync();
 
             try
@@ -136,30 +123,23 @@ namespace Business.Concrete
             return new ErrorResult("Rezervasyon bilgileri silinemez, IsCanceled alanı true edilerek güncellenebilir.");
         }
 
-        private async Task<ResDateStatus?> ResDateControl(Guid doctorId, DateTime resDate)
+        private ResDateStatus? ResDateControl(ICollection<Reservation> reservations, DateTime resDate)
         {
-            var doctor = await UnitOfWork.DoctorRepository.GetWithInclude(doctorId);
-
-            if (doctor == null)
-            {
-                return null;
-            }
-
-            var isDoctorBusyForDate = doctor.Reservations.Any(x => x.ResDate == resDate);
+            var isDoctorBusyForDate = reservations.Any(x => x.ResDate == resDate);
 
             if (isDoctorBusyForDate)
             {
                 return ResDateStatus.BusyForDateAndHour;
             }
 
-            isDoctorBusyForDate = doctor.Reservations.Count(x => x.ResDate.Date.CompareTo(resDate.Date) == 0) > 10;
+            isDoctorBusyForDate = reservations.Count(x => x.ResDate.Date.CompareTo(resDate.Date) == 0) > 10;
 
             if (isDoctorBusyForDate)
             {
                 return ResDateStatus.BusyForDate;
             }
 
-            var prevResDate = doctor.Reservations.OrderByDescending(x => x.ResDate).FirstOrDefault(x => x.ResDate.CompareTo(resDate) < 0)?.ResDate;
+            var prevResDate = reservations.OrderByDescending(x => x.ResDate).FirstOrDefault(x => x.ResDate.CompareTo(resDate) < 0)?.ResDate;
 
             if (prevResDate == null)
             {
@@ -174,6 +154,40 @@ namespace Business.Concrete
             }
 
             return ResDateStatus.Ok;
+        }
+        
+        private async Task<IResult> CanBeReservationCreateOrUpdate(Guid doctorId, Guid patientId, DateTime resDate)
+        {
+            var doctor = await UnitOfWork.DoctorRepository.GetWithInclude(doctorId);
+
+            if (doctor == null)
+            {
+                return null;
+            }
+
+            var doctorReservations = doctor.Reservations.Where(x => x.IsCanceled == false).ToList();
+            var resDateControl = ResDateControl(doctorReservations, resDate);
+
+            switch (resDateControl)
+            {
+                case ResDateStatus.Ok:
+                    break;
+                case ResDateStatus.BusyForDateAndHour:
+                    return new ErrorResult("Doktor'un girilen tarih & saat için rezervasyonu mevcut.");
+                case ResDateStatus.BusyForDate:
+                    return new ErrorResult("Doktora bir gün için 10 adetten fazla randevu tanımlanamaz.");
+                case ResDateStatus.LessThan15Min:
+                    return new ErrorResult("Girilen tarih & saat bilgisi, bir önceki randevudan minimum 15 dk sonra olmalıdır.");
+            }
+
+            var isPatientHaveReservationForDate = await UnitOfWork.ReservationRepository.GetListAsync(x => x.PatientId == patientId && x.ResDate.Date.CompareTo(resDate.Date) == 0);
+
+            if (isPatientHaveReservationForDate.Any())
+            {
+                return new ErrorResult("Hasta için o güne tanımlanmış bir rezervasyon zaten mevcut.");
+            }
+
+            return new SuccessResult();
         }
     }
 }
