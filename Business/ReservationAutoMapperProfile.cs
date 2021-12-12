@@ -2,6 +2,7 @@ using AutoMapper;
 using Core.Business.DTOs;
 using Core.Business.DTOs.Doctor;
 using Core.Business.DTOs.Person;
+using Core.Business.DTOs.Reservation;
 using Domain;
 
 namespace Business
@@ -40,6 +41,28 @@ namespace Business
                     RoomNo = z.Employee.Address.RoomNo
                 }));
 
+            CreateMap<ReservationCreateDto, Person>()
+                .ForMember(x => x.Phone, y => y.MapFrom(z => z.PatientInfo.Phone))
+                .ForMember(x => x.FullName, y => y.MapFrom(z => z.PatientInfo.FullName))
+                .ForMember(x => x.IdentityNumber, y => y.MapFrom(z => z.PatientInfo.IdentityNumber));
+            CreateMap<ReservationUpdateDto, Person>()
+                .ForMember(x => x.Phone, y => y.MapFrom(z => z.PatientInfo.Phone))
+                .ForMember(x => x.FullName, y => y.MapFrom(z => z.PatientInfo.FullName));
+            CreateMap<ReservationCreateDto, Reservation>();
+            CreateMap<ReservationUpdateDto, Reservation>();
+            CreateMap<Reservation, ReservationGetDto>()
+                .ForMember(x => x.DoctorInfo, y => y.MapFrom(z => new PersonCreateDto
+                {
+                    Phone = z.Doctor.Employee.Person.Phone,
+                    FullName = z.Doctor.Employee.Person.FullName,
+                    IdentityNumber = z.Doctor.Employee.Person.IdentityNumber
+                }))
+                .ForMember(x=>x.PatientInfo, y=>y.MapFrom(z=>new PersonCreateDto
+                {
+                    Phone = z.Patient.Person.Phone,
+                    FullName = z.Patient.Person.FullName,
+                    IdentityNumber = z.Patient.Person.IdentityNumber
+                }));
         }
     }
 }
