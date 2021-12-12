@@ -1,5 +1,7 @@
 using AutoMapper;
 using Business;
+using Business.Abstract;
+using Business.Concrete;
 using DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +32,7 @@ namespace WebAPI
                 options.UseNpgsql("Host=localhost;Port=5432;User ID=postgres;password=0B861439fCa66;Database=ReservationProject");
             });
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
+            services.AddScoped<IDoctorService, DoctorManager>();
 
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new ReservationAutoMapperProfile()); });
             var mapper = mappingConfig.CreateMapper();
