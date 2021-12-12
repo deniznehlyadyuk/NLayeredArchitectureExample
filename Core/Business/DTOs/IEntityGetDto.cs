@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Business.DTOs.Student
+namespace Core.Business.DTOs
 {
     public interface IEntityGetDto
     {
