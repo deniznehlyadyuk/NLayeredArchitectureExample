@@ -12,5 +12,7 @@ namespace DataAccess
         Task RollbackTransactionAsync();
         Task CommitTransactionAsync();
         IDoctorRepository DoctorRepository { get; }
+        IPatientRepository PatientRepository { get; }
+        IReservationRepository ReservationRepository { get; }
     }
 }

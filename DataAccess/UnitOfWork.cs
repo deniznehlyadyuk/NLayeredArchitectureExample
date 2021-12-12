@@ -36,6 +36,8 @@ namespace DataAccess
         }
 
         private IDoctorRepository _doctorRepository;
+        private IPatientRepository _patientRepository;
+        private IReservationRepository _reservationRepository;
 
         public IDoctorRepository DoctorRepository
         {
@@ -47,6 +49,32 @@ namespace DataAccess
                 }
 
                 return _doctorRepository;
+            }
+        }
+
+        public IPatientRepository PatientRepository
+        {
+            get
+            {
+                if (_patientRepository == null)
+                {
+                    _patientRepository = new PatientRepository(_context);
+                }
+
+                return _patientRepository;
+            }
+        }
+
+        public IReservationRepository ReservationRepository
+        {
+            get
+            {
+                if (_reservationRepository == null)
+                {
+                    _reservationRepository = new ReservationRepository(_context);
+                }
+
+                return _reservationRepository;
             }
         }
     }
