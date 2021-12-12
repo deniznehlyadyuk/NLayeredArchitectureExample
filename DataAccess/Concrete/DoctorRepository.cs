@@ -21,6 +21,7 @@ namespace DataAccess.Concrete
                 .Include(x => x.Employee)
                 .ThenInclude(x => x.Person)
                 .Include(x => x.Employee.Address)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
     }
