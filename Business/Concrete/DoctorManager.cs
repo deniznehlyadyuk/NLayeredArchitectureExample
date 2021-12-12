@@ -40,6 +40,7 @@ namespace Business.Concrete
         {
             var address = Mapper.Map<AddressDto, Address>(input.Address);
             var person = Mapper.Map<DoctorCreateDto, Person>(input);
+            var employee = Mapper.Map<DoctorCreateDto, Employee>(input);
 
             await UnitOfWork.BeginTransactionAsync();
             
@@ -48,11 +49,8 @@ namespace Business.Concrete
                 await _addressRepository.AddAsync(address);
                 await _personRepository.AddAsync(person);
 
-                var employee = new Employee
-                {
-                    PersonId = person.Id,
-                    AddressId = address.Id
-                };
+                employee.AddressId = address.Id;
+                employee.PersonId = person.Id;
 
                 await _employeeRepository.AddAsync(employee);
 
@@ -127,7 +125,7 @@ namespace Business.Concrete
                 await _addressRepository.DeleteAsync(address);
                 await _personRepository.DeleteAsync(person);
                 await UnitOfWork.CommitTransactionAsync();
-                return new SuccessResult("");
+                return new SuccessResult($"'{id}' id'li Doctor entitysi silindi.");
             }
             catch (DbUpdateException ex)
             {
