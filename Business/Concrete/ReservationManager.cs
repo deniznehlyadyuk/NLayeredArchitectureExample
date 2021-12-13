@@ -25,10 +25,12 @@ namespace Business.Concrete
         }
         
         private readonly IEntityRepository<Person> _personRepository;
-        
+        private readonly IEntityRepository<Patient> _patientRepository;
+
         public ReservationManager(IUnitOfWorks unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
             _personRepository = unitOfWork.GenerateRepository<Person>();
+            _patientRepository = unitOfWork.GenerateRepository<Patient>();
         }
 
         protected override async Task<ReservationGetDto> ConvertToDtoForGetAsync(Reservation input)
@@ -121,14 +123,25 @@ namespace Business.Concrete
         public async Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDoctorId(Guid id)
         {
             var reservations = await UnitOfWork.ReservationRepository.GetWithInclude(x => x.DoctorId == id);
-            var reservationDtos = new List<ReservationGetDto>();
-            
-            foreach (var reservation in reservations)
-            {
-                var reservationDto = Mapper.Map<Reservation, ReservationGetDto>(reservation); 
-                reservationDtos.Add(reservationDto);
-            }
+            var reservationDtos = Mapper.Map<List<Reservation>, List<ReservationGetDto>>(reservations.ToList());
 
+            return new SuccessDataResult<ICollection<ReservationGetDto>>(reservationDtos);
+        }
+
+        public async Task<IDataResult<ICollection<ReservationGetDto>>> GetListByPatientIdentityNumber(string identityNumber)
+        {
+            var person = await _personRepository.GetAsync(x => x.IdentityNumber == identityNumber);
+            var patient = await _patientRepository.GetAsync(x => x.PersonId == person.Id);
+            var reservations = await UnitOfWork.ReservationRepository.GetWithInclude(x => x.PatientId == patient.Id);
+            var reservationDtos = Mapper.Map<List<Reservation>, List<ReservationGetDto>>(reservations.ToList());
+
+            return new SuccessDataResult<ICollection<ReservationGetDto>>(reservationDtos);
+        }
+
+        public async Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDate(DateTime date)
+        {
+            var reservations = await UnitOfWork.ReservationRepository.GetWithInclude(x => x.ResDate.Date.CompareTo(date.Date) == 0);
+            var reservationDtos = Mapper.Map<List<Reservation>, List<ReservationGetDto>>(reservations.ToList());
             return new SuccessDataResult<ICollection<ReservationGetDto>>(reservationDtos);
         }
 

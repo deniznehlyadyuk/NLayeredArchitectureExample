@@ -16,9 +16,23 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("Doctor/{id:guid}")]
-        public async Task<IActionResult> GetListByDoctorId(Guid id)
+        public async Task<IActionResult> GetListByDoctorIdentityNumber(Guid id)
         {
             var result = await _service.GetListByDoctorId(id);
+            return Ok(result);
+        }
+
+        [HttpGet("Patient/{identityNumber}")]
+        public async Task<IActionResult> GetListByPatientIdentityNumber(string identityNumber)
+        {
+            var result = await _service.GetListByPatientIdentityNumber(identityNumber);
+            return Ok(result);
+        }
+
+        [HttpGet("Date")]
+        public async Task<IActionResult> GetListByDate(DateTime date)
+        {
+            var result = await _service.GetListByDate(date);
             return Ok(result);
         }
     }

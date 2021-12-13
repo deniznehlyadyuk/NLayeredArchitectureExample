@@ -10,5 +10,7 @@ namespace Business.Abstract
     public interface IReservationService : ICrudEntityService<ReservationGetDto, ReservationCreateDto, ReservationUpdateDto>
     {
         Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDoctorId(Guid id);
+        Task<IDataResult<ICollection<ReservationGetDto>>> GetListByPatientIdentityNumber(string identityNumber);
+        Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDate(DateTime date);
     }
 }
