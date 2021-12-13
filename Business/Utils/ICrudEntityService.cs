@@ -11,8 +11,8 @@ namespace Business.Utils
         where TEntityCreateDto : IDto, new()
         where TEntityUpdateDto : IDto, new()
     {
-        Task<IDataResult<TEntityGetDto>> AddAsync(TEntityCreateDto input, IDictionary<string, object> extraProperties = null);
-        Task<IDataResult<TEntityGetDto>> UpdateAsync(Guid id, TEntityUpdateDto input, IDictionary<string, object> extraProperties = null);
+        Task<IDataResult<TEntityGetDto>> AddAsync(TEntityCreateDto input);
+        Task<IDataResult<TEntityGetDto>> UpdateAsync(Guid id, TEntityUpdateDto input);
         Task<IResult> DeleteByIdAsync(Guid id);
         Task<IDataResult<TEntityGetDto>> GetByIdAsync(Guid id);
         Task<IDataResult<ICollection<TEntityGetDto>>> GetAllAsync();

@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Business.Concrete
 {
-    public class DoctorManager : CrudEntityManager<Doctor, DoctorGetDto, DoctorCreateDto, DoctorUpdateDto>, IDoctorService
+    public class DoctorManager : BaseManager<Doctor, DoctorGetDto>, IDoctorService
     {
         private readonly IEntityRepository<Address> _addressRepository;
         private readonly IEntityRepository<Person> _personRepository;
@@ -25,9 +25,6 @@ namespace Business.Concrete
             _addressRepository = unitOfWork.GenerateRepository<Address>();
             _personRepository = unitOfWork.GenerateRepository<Person>();
             _employeeRepository = unitOfWork.GenerateRepository<Employee>();
-            BeginTransactionFlag = false;
-            RollbackTransactionFlag = true;
-            CommitTransactionFlag = true;
         }
 
         protected override async Task<DoctorGetDto> ConvertToDtoForGetAsync(Doctor input)
@@ -36,11 +33,12 @@ namespace Business.Concrete
             return Mapper.Map<Doctor, DoctorGetDto>(doctor);
         }
 
-        public override async Task<IDataResult<DoctorGetDto>> AddAsync(DoctorCreateDto input, IDictionary<string, object> extraProperties = null)
+        public async Task<IDataResult<DoctorGetDto>> AddAsync(DoctorCreateDto input)
         {
             var address = Mapper.Map<AddressDto, Address>(input.Address);
             var person = Mapper.Map<DoctorCreateDto, Person>(input);
             var employee = Mapper.Map<DoctorCreateDto, Employee>(input);
+            var doctor = new Doctor();
 
             await UnitOfWork.BeginTransactionAsync();
             
@@ -54,10 +52,13 @@ namespace Business.Concrete
 
                 await _employeeRepository.AddAsync(employee);
 
-                return await base.AddAsync(input, new Dictionary<string, object>
-                {
-                    {"EmployeeId", employee.Id}
-                });
+                doctor.EmployeeId = employee.Id;
+                
+                await BaseEntityRepository.AddAsync(doctor);
+
+                await UnitOfWork.CommitTransactionAsync();
+
+                return await GetByIdAsync(doctor.Id);
             }
             catch (DbUpdateException ex)
             {
@@ -66,7 +67,7 @@ namespace Business.Concrete
             }
         }
 
-        public override async Task<IDataResult<DoctorGetDto>> UpdateAsync(Guid id, DoctorUpdateDto input, IDictionary<string, object> extraProperties = null)
+        public async Task<IDataResult<DoctorGetDto>> UpdateAsync(Guid id, DoctorUpdateDto input)
         {
             var doctor = await UnitOfWork.DoctorRepository.GetWithInclude(id);
 
@@ -75,7 +76,6 @@ namespace Business.Concrete
                 return new ErrorDataResult<DoctorGetDto>($"'{id}' id'li Doctor entity'si bulunamadı.");
             }
 
-            var employeeId = doctor.EmployeeId;
             var personId = doctor.Employee.PersonId;
             var addressId = doctor.Employee.AddressId;
             var identityNumber = doctor.Employee.Person.IdentityNumber;
@@ -93,11 +93,8 @@ namespace Business.Concrete
             {
                 await _addressRepository.UpdateAsync(address);
                 await _personRepository.UpdateAsync(person);
-
-                return await base.UpdateAsync(id, input, new Dictionary<string, object>
-                {
-                    {"EmployeeId", employeeId}
-                });
+                await UnitOfWork.CommitTransactionAsync();
+                return await GetByIdAsync(id);
             }
             catch (DbUpdateException ex)
             {
@@ -106,7 +103,7 @@ namespace Business.Concrete
             }
         }
 
-        public override async Task<IResult> DeleteByIdAsync(Guid id)
+        public async Task<IResult> DeleteByIdAsync(Guid id)
         {
             var doctor = await UnitOfWork.DoctorRepository.GetWithInclude(id);
 

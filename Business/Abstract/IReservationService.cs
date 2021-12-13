@@ -5,6 +5,5 @@ namespace Business.Abstract
 {
     public interface IReservationService : ICrudEntityService<ReservationGetDto, ReservationCreateDto, ReservationUpdateDto>
     {
-        
     }
 }

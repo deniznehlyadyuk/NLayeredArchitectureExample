@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Business.Concrete
 {
-    public class ReservationManager : CrudEntityManager<Reservation, ReservationGetDto, ReservationCreateDto, ReservationUpdateDto>, IReservationService
+    public class ReservationManager : BaseManager<Reservation, ReservationGetDto>, IReservationService
     {
         private enum ResDateStatus
         {
@@ -29,9 +29,6 @@ namespace Business.Concrete
         public ReservationManager(IUnitOfWorks unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
             _personRepository = unitOfWork.GenerateRepository<Person>();
-            BeginTransactionFlag = false;
-            CommitTransactionFlag = true;
-            RollbackTransactionFlag = true;
         }
 
         protected override async Task<ReservationGetDto> ConvertToDtoForGetAsync(Reservation input)
@@ -40,11 +37,12 @@ namespace Business.Concrete
             return Mapper.Map<Reservation, ReservationGetDto>(reservation);
         }
 
-        public override async Task<IDataResult<ReservationGetDto>> AddAsync(ReservationCreateDto input, IDictionary<string, object> extraProperties = null)
+        public async Task<IDataResult<ReservationGetDto>> AddAsync(ReservationCreateDto input)
         {
             var person = Mapper.Map<ReservationCreateDto, Person>(input);
             var patient = await UnitOfWork.PatientRepository.GetByIdentityNumber(input.PatientInfo.IdentityNumber);
-
+            var reservation = Mapper.Map<ReservationCreateDto, Reservation>(input);
+            
             await UnitOfWork.BeginTransactionAsync();
 
             try
@@ -63,12 +61,14 @@ namespace Business.Concrete
                     await UnitOfWork.RollbackTransactionAsync();
                     return new ErrorDataResult<ReservationGetDto>(result.Message);
                 }
+
+                reservation.PatientId = patient.Id;
+                reservation.IsCanceled = false;
+                await BaseEntityRepository.AddAsync(reservation);
+
+                await UnitOfWork.CommitTransactionAsync();
                 
-                return await base.AddAsync(input, new Dictionary<string, object>
-                {
-                    {"PatientId", patient.Id},
-                    {"IsCanceled", false}
-                });
+                return await GetByIdAsync(reservation.Id);
             }
             catch (DbUpdateException ex)
             {
@@ -77,7 +77,7 @@ namespace Business.Concrete
             }
         }
 
-        public override async Task<IDataResult<ReservationGetDto>> UpdateAsync(Guid id, ReservationUpdateDto input, IDictionary<string, object> extraProperties = null)
+        public async Task<IDataResult<ReservationGetDto>> UpdateAsync(Guid id, ReservationUpdateDto input)
         {
             var reservation = await UnitOfWork.ReservationRepository.GetWithInclude(id);
 
@@ -87,13 +87,9 @@ namespace Business.Concrete
             }
 
             var patientId = reservation.PatientId;
-            var patientPersonId = reservation.Patient.PersonId;
-            var patientIdentityNumber = reservation.Patient.Person.IdentityNumber;
+            reservation.Patient.Person = Mapper.Map(input, reservation.Patient.Person);
+            reservation = Mapper.Map(input, reservation);
 
-            var person = Mapper.Map<ReservationUpdateDto, Person>(input);
-            person.Id = patientPersonId;
-            person.IdentityNumber = patientIdentityNumber;
-            
             var result = await CanBeReservationCreateOrUpdate(input.DoctorId, patientId, input.ResDate);
 
             if (!result.Success)
@@ -105,11 +101,10 @@ namespace Business.Concrete
 
             try
             {
-                await _personRepository.UpdateAsync(person);
-                return await base.UpdateAsync(id, input, new Dictionary<string, object>
-                {
-                    {"PatientId", patientId}
-                });
+                await _personRepository.UpdateAsync(reservation.Patient.Person);
+                await BaseEntityRepository.UpdateAsync(reservation);
+                await UnitOfWork.CommitTransactionAsync();
+                return await GetByIdAsync(id);
             }
             catch (DbUpdateException ex)
             {
@@ -118,21 +113,21 @@ namespace Business.Concrete
             }
         }
 
-        public override async Task<IResult> DeleteByIdAsync(Guid id)
+        public async Task<IResult> DeleteByIdAsync(Guid id)
         {
             return new ErrorResult("Rezervasyon bilgileri silinemez, IsCanceled alanı true edilerek güncellenebilir.");
         }
 
-        private ResDateStatus? ResDateControl(ICollection<Reservation> reservations, DateTime resDate)
+        private ResDateStatus? ResDateControl(ICollection<Reservation> reservations, DateTime resDate, Guid patientId)
         {
-            var isDoctorBusyForDate = reservations.Any(x => x.ResDate == resDate);
+            var isDoctorBusyForDate = reservations.Any(x => x.ResDate == resDate && x.PatientId != patientId);
 
             if (isDoctorBusyForDate)
             {
                 return ResDateStatus.BusyForDateAndHour;
             }
 
-            isDoctorBusyForDate = reservations.Count(x => x.ResDate.Date.CompareTo(resDate.Date) == 0) > 10;
+            isDoctorBusyForDate = reservations.Count(x => x.ResDate.Date.CompareTo(resDate.Date) == 0 && x.IsCanceled == false && x.PatientId != patientId) > 3;
 
             if (isDoctorBusyForDate)
             {
@@ -166,7 +161,7 @@ namespace Business.Concrete
             }
 
             var doctorReservations = doctor.Reservations.Where(x => x.IsCanceled == false).ToList();
-            var resDateControl = ResDateControl(doctorReservations, resDate);
+            var resDateControl = ResDateControl(doctorReservations, resDate, patientId);
 
             switch (resDateControl)
             {
@@ -180,7 +175,8 @@ namespace Business.Concrete
                     return new ErrorResult("Girilen tarih & saat bilgisi, bir önceki randevudan minimum 15 dk sonra olmalıdır.");
             }
 
-            var isPatientHaveReservationForDate = await UnitOfWork.ReservationRepository.GetListAsync(x => x.PatientId == patientId && x.ResDate.Date.CompareTo(resDate.Date) == 0);
+            var isPatientHaveReservationForDate = await UnitOfWork.ReservationRepository
+                .GetListAsync(x => x.PatientId == patientId && x.ResDate.Date.CompareTo(resDate.Date) == 0 && x.DoctorId != doctorId);
 
             if (isPatientHaveReservationForDate.Any())
             {
