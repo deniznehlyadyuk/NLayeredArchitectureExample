@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Business.Utils;
+using Business.Utils.Abstract;
 using Core.Business.DTOs.Reservation;
 using Core.Utils.Result;
 

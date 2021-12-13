@@ -1,10 +1,11 @@
-using Core.Business.DTOs.Person;
+using Core.Business.DTOs.Abstract;
+using Core.Business.DTOs.Employee;
 
 namespace Core.Business.DTOs.Secretary
 {
-    public class SecretaryCreateDto : IDto
+    public class SecretaryCreateDto : IEmployeeEntityCreateDto
     {
-        public PersonCreateDto PersonalInfo { get; set; }
-        public AddressDto Address { get; set; }
+        public EmployeeCreateDto EmployeeInfo { get; set; }
+        public int LandPhoneCode { get; set; }
     }
 }

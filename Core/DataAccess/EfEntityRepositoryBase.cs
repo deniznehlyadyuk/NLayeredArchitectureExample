@@ -53,5 +53,10 @@ namespace Core.DataAccess
 
             return await DbSet.ToListAsync();
         }
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await DbSet.AnyAsync(predicate);
+        }
     }
 }

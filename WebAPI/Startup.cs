@@ -32,9 +32,9 @@ namespace WebAPI
                 options.UseNpgsql("Host=localhost;Port=5432;User ID=postgres;password=0B861439fCa66;Database=ReservationProject");
             });
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
-            services.AddScoped<IDoctorService, DoctorManager>();
-            services.AddScoped<IReservationService, ReservationManager>();
-            services.AddScoped<DbContext, ReservationContext>();
+            services.AddScoped<IDoctorService, DoctorEntityManager>();
+            services.AddScoped<IReservationService, ReservationEntityManager>();
+            services.AddScoped<ISecretaryService, SecretaryEntityManager>();
 
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new ReservationAutoMapperProfile()); });
             var mapper = mappingConfig.CreateMapper();

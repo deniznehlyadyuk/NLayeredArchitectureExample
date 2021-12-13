@@ -1,4 +1,4 @@
-namespace Core.Business.DTOs
+namespace Core.Business.DTOs.Abstract
 {
     public interface IDto
     {

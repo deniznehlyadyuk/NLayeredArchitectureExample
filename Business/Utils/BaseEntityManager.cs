@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business.Utils.Abstract;
 using Core.Business.DTOs;
+using Core.Business.DTOs.Abstract;
 using Core.DataAccess;
 using Core.Domain;
 using Core.Utils.Result;
@@ -13,7 +15,7 @@ using Npgsql;
 
 namespace Business.Utils
 {
-    public class BaseManager<TEntity, TEntityGetDto>
+    public class BaseEntityManager<TEntity, TEntityGetDto> : IBaseEntityService<TEntityGetDto>
         where TEntity : BaseEntity, new()
         where TEntityGetDto : IEntityGetDto, new()
     {
@@ -21,7 +23,7 @@ namespace Business.Utils
         protected readonly IMapper Mapper;
         protected readonly IEntityRepository<TEntity> BaseEntityRepository;
 
-        public BaseManager(IUnitOfWorks unitOfWork, IMapper mapper)
+        public BaseEntityManager(IUnitOfWorks unitOfWork, IMapper mapper)
         {
             UnitOfWork = unitOfWork;
             Mapper = mapper;
@@ -75,6 +77,27 @@ namespace Business.Utils
             }
 
             return new ErrorDataResult<TEntityGetDto>(ex.Message);
+        }
+
+        protected TEntity SetExtraProperties(TEntity entity, IDictionary<string, object> extraProperties = null)
+        {
+            if (extraProperties != null)
+            {
+                foreach (var propertyName in extraProperties.Keys)
+                {
+                    var property = entity.GetType().GetProperty(propertyName);
+
+                    if (property == null) // entity'nin böyle bir propertysi yoksa
+                    {
+                        continue;
+                    }
+
+                    var castedValue = Convert.ChangeType(extraProperties[propertyName], property.PropertyType);
+                    property.SetValue(entity, castedValue, null);
+                }
+            }
+            
+            return entity;
         }
     }
 }

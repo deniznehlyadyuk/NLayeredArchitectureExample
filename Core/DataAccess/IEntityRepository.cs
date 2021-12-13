@@ -14,5 +14,6 @@ namespace Core.DataAccess
         Task DeleteAsync(TEntity input);
         Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate);
         Task<ICollection<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate = null);
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
     }
 }

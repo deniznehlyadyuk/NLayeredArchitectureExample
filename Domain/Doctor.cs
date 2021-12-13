@@ -6,7 +6,7 @@ using Core.Domain;
 
 namespace Domain
 {
-    public class Doctor : BaseEntity
+    public class Doctor : BaseEntity, IEmployeeEntity
     {
         [ForeignKey("Employee")]
         [Required]

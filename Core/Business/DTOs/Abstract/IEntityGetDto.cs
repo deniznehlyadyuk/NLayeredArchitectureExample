@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Business.DTOs
+namespace Core.Business.DTOs.Abstract
 {
     public interface IEntityGetDto
     {

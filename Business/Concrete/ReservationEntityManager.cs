@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Business.Concrete
 {
-    public class ReservationManager : BaseManager<Reservation, ReservationGetDto>, IReservationService
+    public class ReservationEntityManager : BaseEntityManager<Reservation, ReservationGetDto>, IReservationService
     {
         private enum ResDateStatus
         {
@@ -27,7 +27,7 @@ namespace Business.Concrete
         private readonly IEntityRepository<Person> _personRepository;
         private readonly IEntityRepository<Patient> _patientRepository;
 
-        public ReservationManager(IUnitOfWorks unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public ReservationEntityManager(IUnitOfWorks unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
             _personRepository = unitOfWork.GenerateRepository<Person>();
             _patientRepository = unitOfWork.GenerateRepository<Patient>();
@@ -39,7 +39,7 @@ namespace Business.Concrete
             return Mapper.Map<Reservation, ReservationGetDto>(reservation);
         }
 
-        public async Task<IDataResult<ReservationGetDto>> AddAsync(ReservationCreateDto input)
+        public async Task<IDataResult<ReservationGetDto>> AddAsync(ReservationCreateDto input, IDictionary<string, object> extraProperties = null)
         {
             var person = Mapper.Map<ReservationCreateDto, Person>(input);
             var patient = await UnitOfWork.PatientRepository.GetByIdentityNumber(input.PatientInfo.IdentityNumber);
@@ -79,7 +79,7 @@ namespace Business.Concrete
             }
         }
 
-        public async Task<IDataResult<ReservationGetDto>> UpdateAsync(Guid id, ReservationUpdateDto input)
+        public async Task<IDataResult<ReservationGetDto>> UpdateAsync(Guid id, ReservationUpdateDto input, IDictionary<string, object> extraProperties = null)
         {
             var reservation = await UnitOfWork.ReservationRepository.GetWithInclude(id);
 

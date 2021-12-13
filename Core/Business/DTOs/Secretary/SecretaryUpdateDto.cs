@@ -1,10 +1,11 @@
-using Core.Business.DTOs.Person;
+using Core.Business.DTOs.Abstract;
+using Core.Business.DTOs.Employee;
 
 namespace Core.Business.DTOs.Secretary
 {
-    public class SecretaryUpdateDto : IDto
+    public class SecretaryUpdateDto : IEmployeeEntityUpdateDto
     {
-        public PersonUpdateDto PersonalInfo { get; set; }
-        public AddressDto Address { get; set; }
+        public EmployeeUpdateDto EmployeeInfo { get; set; }
+        public int LandPhoneCode { get; set; }
     }
 }

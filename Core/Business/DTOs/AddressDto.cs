@@ -1,3 +1,5 @@
+using Core.Business.DTOs.Abstract;
+
 namespace Core.Business.DTOs
 {
     public class AddressDto : IDto

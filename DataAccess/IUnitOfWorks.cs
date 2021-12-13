@@ -14,5 +14,6 @@ namespace DataAccess
         IDoctorRepository DoctorRepository { get; }
         IPatientRepository PatientRepository { get; }
         IReservationRepository ReservationRepository { get; }
+        IEmployeeRepository EmployeeRepository { get; }
     }
 }

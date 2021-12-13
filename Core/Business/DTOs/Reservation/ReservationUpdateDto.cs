@@ -1,4 +1,5 @@
 using System;
+using Core.Business.DTOs.Abstract;
 using Core.Business.DTOs.Person;
 
 namespace Core.Business.DTOs.Reservation

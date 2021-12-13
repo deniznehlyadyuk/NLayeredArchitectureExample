@@ -38,6 +38,7 @@ namespace DataAccess
         private IDoctorRepository _doctorRepository;
         private IPatientRepository _patientRepository;
         private IReservationRepository _reservationRepository;
+        private IEmployeeRepository _employeeRepository;
 
         public IDoctorRepository DoctorRepository
         {
@@ -75,6 +76,19 @@ namespace DataAccess
                 }
 
                 return _reservationRepository;
+            }
+        }
+
+        public IEmployeeRepository EmployeeRepository
+        {
+            get
+            {
+                if (_employeeRepository == null)
+                {
+                    _employeeRepository = new EmployeeRepository(_context);
+                }
+
+                return _employeeRepository;
             }
         }
     }

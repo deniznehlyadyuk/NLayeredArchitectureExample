@@ -1,10 +1,10 @@
-using Core.Business.DTOs.Person;
+using Core.Business.DTOs.Abstract;
+using Core.Business.DTOs.Employee;
 
 namespace Core.Business.DTOs.Doctor
 {
-    public class DoctorUpdateDto : IDto
+    public class DoctorUpdateDto : IEmployeeEntityUpdateDto
     {
-        public PersonUpdateDto PersonalInfo { get; set; }
-        public AddressDto Address { get; set; }
+        public EmployeeUpdateDto EmployeeInfo { get; set; }
     }
 }
