@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Utils.Abstract;
-using Core.Business.DTOs;
 using Core.Business.DTOs.Abstract;
 using Core.DataAccess;
 using Core.Domain;

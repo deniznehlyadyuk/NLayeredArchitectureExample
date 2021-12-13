@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Business.Utils.Abstract;
-using Core.Business.DTOs;
 using Core.Business.DTOs.Abstract;
 using Microsoft.AspNetCore.Mvc;
 

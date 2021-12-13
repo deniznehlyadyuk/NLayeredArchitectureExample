@@ -34,7 +34,8 @@ namespace WebAPI
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
             services.AddScoped<IDoctorService, DoctorEntityManager>();
             services.AddScoped<IReservationService, ReservationEntityManager>();
-            services.AddScoped<ISecretaryService, SecretaryEntityManager>();
+            services.AddScoped<ISecretaryService, SecretaryManager>();
+            services.AddScoped<ISecretaryDoctorService, SecretaryDoctorManager>();
 
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new ReservationAutoMapperProfile()); });
             var mapper = mappingConfig.CreateMapper();

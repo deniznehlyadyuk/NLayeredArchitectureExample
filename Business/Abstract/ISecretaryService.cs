@@ -5,6 +5,5 @@ namespace Business.Abstract
 {
     public interface ISecretaryService : ICrudEntityService<SecretaryGetDto, SecretaryCreateDto, SecretaryUpdateDto>
     {
-        
     }
 }

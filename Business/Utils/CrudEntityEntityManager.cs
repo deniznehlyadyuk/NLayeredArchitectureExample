@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Utils.Abstract;
-using Core.Business.DTOs;
 using Core.Business.DTOs.Abstract;
 using Core.Domain;
 using Core.Utils.Result;

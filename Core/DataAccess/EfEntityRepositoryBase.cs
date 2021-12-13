@@ -58,5 +58,10 @@ namespace Core.DataAccess
         {
             return await DbSet.AnyAsync(predicate);
         }
+
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await DbSet.CountAsync(predicate);
+        }
     }
 }

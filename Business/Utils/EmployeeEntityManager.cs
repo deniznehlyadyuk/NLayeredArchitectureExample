@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Business.DTOs;
 using Core.Business.DTOs.Abstract;
 using Core.Business.DTOs.Employee;
 using Core.Domain;
