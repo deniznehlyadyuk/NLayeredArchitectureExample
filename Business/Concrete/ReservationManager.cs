@@ -145,6 +145,13 @@ namespace Business.Concrete
             return new SuccessDataResult<ICollection<ReservationGetDto>>(reservationDtos);
         }
 
+        public async Task<IDataResult<ICollection<ReservationGetDto>>> GetActives()
+        {
+            var reservations = await UnitOfWork.ReservationRepository.GetWithInclude(x => x.IsCanceled == false);
+            var reservationDtos = Mapper.Map<List<Reservation>, List<ReservationGetDto>>(reservations.ToList());
+            return new SuccessDataResult<ICollection<ReservationGetDto>>(reservationDtos);
+        }
+
         private ResDateStatus? ResDateControl(ICollection<Reservation> reservations, DateTime resDate, Guid patientId)
         {
             var isDoctorBusyForDate = reservations.Any(x => x.ResDate == resDate && x.PatientId != patientId);

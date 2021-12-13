@@ -35,5 +35,12 @@ namespace WebAPI.Controllers
             var result = await _service.GetListByDate(date);
             return Ok(result);
         }
+
+        [HttpGet("Active")]
+        public async Task<IActionResult> GetActives()
+        {
+            var result = await _service.GetActives();
+            return Ok(result);
+        }
     }
 }

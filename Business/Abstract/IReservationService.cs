@@ -12,5 +12,6 @@ namespace Business.Abstract
         Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDoctorId(Guid id);
         Task<IDataResult<ICollection<ReservationGetDto>>> GetListByPatientIdentityNumber(string identityNumber);
         Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDate(DateTime date);
+        Task<IDataResult<ICollection<ReservationGetDto>>> GetActives();
     }
 }
