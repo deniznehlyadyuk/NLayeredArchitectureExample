@@ -15,6 +15,6 @@ namespace Business.Utils
         Task<IDataResult<TEntityGetDto>> UpdateAsync(Guid id, TEntityUpdateDto input);
         Task<IResult> DeleteByIdAsync(Guid id);
         Task<IDataResult<TEntityGetDto>> GetByIdAsync(Guid id);
-        Task<IDataResult<ICollection<TEntityGetDto>>> GetAllAsync();
+        Task<IDataResult<ICollection<TEntityGetDto>>> GetListAsync();
     }
 }

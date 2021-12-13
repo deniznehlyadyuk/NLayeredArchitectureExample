@@ -118,6 +118,20 @@ namespace Business.Concrete
             return new ErrorResult("Rezervasyon bilgileri silinemez, IsCanceled alanı true edilerek güncellenebilir.");
         }
 
+        public async Task<IDataResult<ICollection<ReservationGetDto>>> GetListByDoctorId(Guid id)
+        {
+            var reservations = await UnitOfWork.ReservationRepository.GetWithInclude(x => x.DoctorId == id);
+            var reservationDtos = new List<ReservationGetDto>();
+            
+            foreach (var reservation in reservations)
+            {
+                var reservationDto = Mapper.Map<Reservation, ReservationGetDto>(reservation); 
+                reservationDtos.Add(reservationDto);
+            }
+
+            return new SuccessDataResult<ICollection<ReservationGetDto>>(reservationDtos);
+        }
+
         private ResDateStatus? ResDateControl(ICollection<Reservation> reservations, DateTime resDate, Guid patientId)
         {
             var isDoctorBusyForDate = reservations.Any(x => x.ResDate == resDate && x.PatientId != patientId);

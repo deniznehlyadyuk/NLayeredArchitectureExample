@@ -69,7 +69,7 @@ namespace WebAPI.Controllers.Abstract
         [HttpGet]
         public async Task<IActionResult> GetList()
         {
-            var result = await _service.GetAllAsync();
+            var result = await _service.GetListAsync();
             return Ok(result);
         }
     }

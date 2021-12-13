@@ -41,7 +41,7 @@ namespace Business.Utils
             return new SuccessDataResult<TEntityGetDto>(entityGetDto);
         }
 
-        public async Task<IDataResult<ICollection<TEntityGetDto>>> GetAllAsync()
+        public async Task<IDataResult<ICollection<TEntityGetDto>>> GetListAsync()
         {
             var entities = await BaseEntityRepository.GetListAsync();
             var entityGetDtos = new List<TEntityGetDto>();
