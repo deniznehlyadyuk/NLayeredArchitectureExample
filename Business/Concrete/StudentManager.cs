@@ -82,5 +82,30 @@ namespace Business.Concrete
 
             return await GetByIdAsync(id);
         }
+
+        public override async Task DeleteByIdAsync(Guid id)
+        {
+            var student = await BaseEntityRepository.GetAsync(x => x.Id == id);
+            var person = await _personRepository.GetAsync(x => x.Id == student.PersonId);
+
+            await UnitOfWork.BeginTransactionAsync();
+            if (student == null)
+            {
+                await UnitOfWork.RollbackTransactionAsync();
+            }
+
+            if (person == null)
+            {
+                await UnitOfWork.RollbackTransactionAsync();
+            }
+            
+            await _personRepository.DeleteAsync(person);
+
+            await UnitOfWork.CommitTransactionAsync();
+
+
+        }
+
+       
     }
 }
