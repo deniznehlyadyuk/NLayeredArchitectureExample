@@ -1,6 +1,7 @@
 using AutoMapper;
 using Core.Business.DTOs.Lesson;
 using Core.Business.DTOs.Student;
+using Core.Business.DTOs.Teacher;
 using Domain;
 
 namespace Business
@@ -16,6 +17,14 @@ namespace Business
             CreateMap<StudentCreateDto, StudentGetDto>();
             CreateMap<Person, Student>();
             CreateMap<Person, StudentGetDto>();
+            
+            CreateMap<TeacherCreateDto, Teacher>();
+            CreateMap<Teacher, TeacherGetDto>();
+            CreateMap<TeacherCreateDto, Person>();
+            CreateMap<TeacherUpdateDto, Person>();
+            CreateMap<TeacherCreateDto, TeacherGetDto>();
+            CreateMap<Person, Teacher>();
+            CreateMap<Person, TeacherGetDto>();
             
             CreateMap<LessonDto, Lesson>();
             CreateMap<Lesson, LessonGetDto>();
