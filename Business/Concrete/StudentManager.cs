@@ -36,12 +36,9 @@ namespace Business.Concrete
 
                 await BaseEntityRepository.AddAsync(student);
 
-                var studentGetDto = Mapper.Map<StudentCreateDto, StudentGetDto>(input);
-                studentGetDto.Id = student.Id;
-
                 await UnitOfWork.CommitTransactionAsync();
-                
-                return new SuccessDataResult<StudentGetDto>(studentGetDto);
+
+                return await GetByIdAsync(student.Id);
             }
             catch (Exception ex)
             {

@@ -10,24 +10,30 @@ namespace Business
     {
         public SchoolAutoMapperProfile()
         {
+            // Student
+            CreateMap<Student, StudentGetDto>()
+                .ForMember(x => x.BornDate, x => x.MapFrom(y => y.Person.BornDate))
+                .ForMember(x => x.FullName, x => x.MapFrom(y => y.Person.FullName))
+                .ForMember(x => x.IdentityNumber, x => x.MapFrom(y => y.Person.IdentityNumber));
             CreateMap<StudentCreateDto, Student>();
-            CreateMap<Student, StudentGetDto>();
+            CreateMap<StudentUpdateDto, Student>();
             CreateMap<StudentCreateDto, Person>();
             CreateMap<StudentUpdateDto, Person>();
-            CreateMap<StudentCreateDto, StudentGetDto>();
-            CreateMap<Person, Student>();
-            CreateMap<Person, StudentGetDto>();
             
+            // Teacher
+            CreateMap<Teacher, TeacherGetDto>()
+                .ForMember(x => x.BornDate, x => x.MapFrom(y => y.Person.BornDate))
+                .ForMember(x => x.FullName, x => x.MapFrom(y => y.Person.FullName))
+                .ForMember(x => x.IdentityNumber, x => x.MapFrom(y => y.Person.IdentityNumber));
             CreateMap<TeacherCreateDto, Teacher>();
-            CreateMap<Teacher, TeacherGetDto>();
+            CreateMap<TeacherUpdateDto, Teacher>();
             CreateMap<TeacherCreateDto, Person>();
             CreateMap<TeacherUpdateDto, Person>();
-            CreateMap<TeacherCreateDto, TeacherGetDto>();
-            CreateMap<Person, Teacher>();
-            CreateMap<Person, TeacherGetDto>();
-            
-            CreateMap<LessonDto, Lesson>();
+
+            // Lesson
             CreateMap<Lesson, LessonGetDto>();
+            CreateMap<LessonDto, Lesson>();
+            CreateMap<LessonDto, Lesson>();
         }
     }
 }

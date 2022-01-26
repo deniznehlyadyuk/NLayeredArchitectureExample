@@ -17,10 +17,17 @@ namespace WebAPI.Controllers
             _studentService = studentService;
         }
 
-        [HttpGet]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetStudent(Guid id)
         {
             var result = await _studentService.GetByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllStudent()
+        {
+            var result = await _studentService.GetAllAsync();
             return Ok(result);
         }
 

@@ -8,19 +8,26 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TeachertController : ControllerBase
+    public class TeacherController : ControllerBase
     {
         private readonly ITeacherService _teacherService;
 
-        public TeachertController(ITeacherService teacherService)
+        public TeacherController(ITeacherService teacherService)
         {
             _teacherService = teacherService;
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetTeacher(Guid id)
         {
             var result = await _teacherService.GetByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllTeacher()
+        {
+            var result = await _teacherService.GetAllAsync();
             return Ok(result);
         }
 
