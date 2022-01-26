@@ -36,7 +36,7 @@ namespace WebAPI
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "WebAPI", Version = "v1"}); });
             services.AddDbContext<SchoolContext>(options =>
             {
-                options.UseNpgsql("Host=localhost;Port=5432;User ID=postgres;password=bursa1999;Database=SchoolProject");
+                options.UseNpgsql(Environment.GetEnvironmentVariable("EISTATISTIK_CONNECTION_STRING"));
             });
             services.AddScoped<IStudentService, StudentManager>();
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
