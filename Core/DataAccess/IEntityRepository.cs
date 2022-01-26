@@ -15,5 +15,9 @@ namespace Core.DataAccess
         Task DeleteByIdAsync(Guid id);
         Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate);
         Task<ICollection<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate = null);
+        Task<TEntity> GetWithIncludeAsync(Expression<Func<TEntity, bool>> predicate, 
+            params Expression<Func<TEntity, object>>[] includes);
+        Task<ICollection<TEntity>> GetListWithIncludeAsync(Expression<Func<TEntity, bool>> predicate = null,
+            params Expression<Func<TEntity, object>>[] includes);
     }
 }

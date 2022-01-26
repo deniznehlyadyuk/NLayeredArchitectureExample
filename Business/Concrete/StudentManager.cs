@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
 using Business.Utils;
 using Core.Business.DTOs.Student;
 using Core.DataAccess;
+using Core.Utils.Results;
 using DataAccess;
 using Domain;
 
@@ -19,20 +22,7 @@ namespace Business.Concrete
             _personRepository = unitOfWork.GenerateRepository<Person>();
         }
 
-        public override async Task<StudentGetDto> ConvertToDtoForGetAsync(Student input)
-        {
-            var person = await _personRepository.GetAsync(x => x.Id == input.PersonId);
-
-            if (person == null)
-            {
-                return Mapper.Map<Student, StudentGetDto>(input);
-            }
-
-            var studentGetDto = Mapper.Map<Student, StudentGetDto>(input);
-            return Mapper.Map(person, studentGetDto);
-        }
-
-        public override async Task<StudentGetDto> AddAsync(StudentCreateDto input)
+        public override async Task<IDataResult<StudentGetDto>> AddAsync(StudentCreateDto input)
         {
             var person = Mapper.Map<StudentCreateDto, Person>(input);
             var student = Mapper.Map<StudentCreateDto, Student>(input);
@@ -51,63 +41,80 @@ namespace Business.Concrete
 
                 await UnitOfWork.CommitTransactionAsync();
                 
-                return studentGetDto;
+                return new SuccessDataResult<StudentGetDto>(studentGetDto);
             }
             catch (Exception ex)
             {
                 await UnitOfWork.RollbackTransactionAsync();
-                throw new Exception(ex.Message);
+                return new ErrorDataResult<StudentGetDto>(ex.Message);
             }
         }
 
-        public override async Task<StudentGetDto> UpdateAsync(Guid id, StudentUpdateDto input)
+        public override async Task<IDataResult<StudentGetDto>> UpdateAsync(Guid id, StudentUpdateDto input)
         {
-            var student = await BaseEntityRepository.GetAsync(x => x.Id == id);
-
+            var student = await BaseEntityRepository.GetWithIncludeAsync(x => x.Id == id, x => x.Person);
+            
             if (student == null)
             {
-                return null;
+                return new ErrorDataResult<StudentGetDto>($"'{id}' id'li Student entitysi bulunamadı.");
             }
-
-            var person = await _personRepository.GetAsync(x => x.Id == student.PersonId);
-
-            if (person == null)
+            
+            if (student.Person == null)
             {
-                return null;
+                return new ErrorDataResult<StudentGetDto>($"'{student.PersonId}' id'li Person entitysi bulunamadı.");
             }
 
-            person = Mapper.Map(input, person);
+            student.Person = Mapper.Map(input, student.Person);
 
-            await _personRepository.UpdateAsync(person);
+            try
+            {
+                await _personRepository.UpdateAsync(student.Person);
+            }
+            catch (Exception ex)
+            {
+                return new ErrorDataResult<StudentGetDto>(ex.Message);
+            }
 
             return await GetByIdAsync(id);
         }
 
-        public override async Task DeleteByIdAsync(Guid id)
+        public override async Task<IResult> DeleteByIdAsync(Guid id)
         {
-            var student = await BaseEntityRepository.GetAsync(x => x.Id == id);
-            var person = await _personRepository.GetAsync(x => x.Id == student.PersonId);
+            var student = await BaseEntityRepository.GetWithIncludeAsync(x => x.Id == id, x => x.Person);
+            
+            if (student == null)
+            {
+                return new ErrorDataResult<StudentGetDto>($"'{id}' id'li Student entitysi bulunamadı.");
+            }
+            
+            if (student.Person == null)
+            {
+                return new ErrorDataResult<StudentGetDto>($"'{student.PersonId}' id'li Person entitysi bulunamadı.");
+            }
+            
+            await _personRepository.DeleteAsync(student.Person);
+
+            return new SuccessResult($"'{id}' id'li Student entitysi silindi.");
+        }
+
+        public override async Task<IDataResult<StudentGetDto>> GetByIdAsync(Guid id)
+        {
+            var student = await BaseEntityRepository.GetWithIncludeAsync(x => x.Id == id, x => x.Person);
 
             if (student == null)
             {
-                return;
+                return new ErrorDataResult<StudentGetDto>($"'{id}' id'li Student entitysi bulunamadı.");
             }
             
-            if (person == null)
-            {
-                return;
-            }
-            
-            await UnitOfWork.BeginTransactionAsync();
-
-            await _personRepository.DeleteAsync(person);
-            
-
-            await UnitOfWork.CommitTransactionAsync();
-
-
+            var studentDto = Mapper.Map<Student, StudentGetDto>(student);
+            return new SuccessDataResult<StudentGetDto>(studentDto);
         }
 
-       
+        public override async Task<IDataResult<ICollection<StudentGetDto>>> GetAllAsync()
+        {
+            var students = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Person);
+            var studentDtos = Mapper.Map<List<Student>, List<StudentGetDto>>(students.ToList());
+            return new SuccessDataResult<ICollection<StudentGetDto>>(studentDtos);
+        }
     }
 }

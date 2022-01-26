@@ -59,5 +59,34 @@ namespace Core.DataAccess
 
             return await DbSet.ToListAsync();
         }
+
+        public async Task<TEntity> GetWithIncludeAsync(Expression<Func<TEntity, bool>> predicate,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            var queryable = DbSet.Where(predicate);
+            foreach (var include in includes)
+            {
+                queryable = queryable.Include(include);
+            }
+            return await queryable.FirstOrDefaultAsync();
+        }
+
+        public async Task<ICollection<TEntity>> GetListWithIncludeAsync(Expression<Func<TEntity, bool>> predicate = null,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            var queryable = DbSet.AsQueryable();
+            
+            if (predicate != null)
+            {
+                queryable = queryable.Where(predicate);
+            }
+            
+            foreach (var include in includes)
+            {
+                queryable = queryable.Include(include);
+            }
+
+            return await queryable.ToListAsync();
+        }
     }
 }

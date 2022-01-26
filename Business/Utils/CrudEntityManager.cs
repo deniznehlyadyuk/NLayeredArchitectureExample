@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Business.DTOs;
@@ -85,7 +86,7 @@ namespace Business.Utils
             return new SuccessResult($"'{id}' id'li {typeof(TEntity).Name} entitysi silindi.");
         }
 
-        public async Task<IDataResult<TEntityGetDto>> GetByIdAsync(Guid id)
+        public virtual async Task<IDataResult<TEntityGetDto>> GetByIdAsync(Guid id)
         {
             var entity = await BaseEntityRepository.GetAsync(x => x.Id == id);
 
@@ -93,28 +94,17 @@ namespace Business.Utils
             {
                 return new ErrorDataResult<TEntityGetDto>($"'{id}' id'li {typeof(TEntity).Name} entitysi bulunamadı.");
             }
-            
-            var entityDto = await ConvertToDtoForGetAsync(entity);
+
+            var entityDto = Mapper.Map<TEntity, TEntityGetDto>(entity);
             
             return new SuccessDataResult<TEntityGetDto>(entityDto);
         }
 
-        public async Task<IDataResult<ICollection<TEntityGetDto>>> GetAllAsync()
+        public virtual async Task<IDataResult<ICollection<TEntityGetDto>>> GetAllAsync()
         {
             var entities = await BaseEntityRepository.GetListAsync();
-            var entityGetDtos = new List<TEntityGetDto>();
-
-            foreach (var entity in entities.ToList())
-            {
-                entityGetDtos.Add(await ConvertToDtoForGetAsync(entity));
-            }
-
-            return new SuccessDataResult<ICollection<TEntityGetDto>>(entityGetDtos);
-        }
-
-        protected virtual async Task<TEntityGetDto> ConvertToDtoForGetAsync(TEntity input)
-        {
-            return Mapper.Map<TEntity, TEntityGetDto>(input);
+            var entityDtos = Mapper.Map<List<TEntity>, List<TEntityGetDto>>(entities.ToList());
+            return new SuccessDataResult<ICollection<TEntityGetDto>>(entityDtos);
         }
     }
 }
