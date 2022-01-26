@@ -88,18 +88,20 @@ namespace Business.Concrete
             var student = await BaseEntityRepository.GetAsync(x => x.Id == id);
             var person = await _personRepository.GetAsync(x => x.Id == student.PersonId);
 
-            await UnitOfWork.BeginTransactionAsync();
             if (student == null)
             {
-                await UnitOfWork.RollbackTransactionAsync();
-            }
-
-            if (person == null)
-            {
-                await UnitOfWork.RollbackTransactionAsync();
+                return;
             }
             
+            if (person == null)
+            {
+                return;
+            }
+            
+            await UnitOfWork.BeginTransactionAsync();
+
             await _personRepository.DeleteAsync(person);
+            
 
             await UnitOfWork.CommitTransactionAsync();
 
