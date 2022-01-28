@@ -20,6 +20,27 @@ namespace Business.Concrete
         {
         }
 
+
+        public override async Task<IDataResult<StudentScoreGetDto>> AddAsync(StudentScoreCreateDto input)
+        {  
+            
+            var entity = Mapper.Map<StudentScoreCreateDto, StudentScore>(input);
+            
+            var scores = await BaseEntityRepository.GetListWithIncludeAsync(x => x.StudentId == input.StudentId);
+
+            foreach (var score in scores)
+            {
+                if (score.ExamNumber==input.ExamNumber && score.LessonId == input.LessonId)
+                {
+                    return new ErrorDataResult<StudentScoreGetDto>("Sınav Numarası aynı olamaz");
+                }
+            }
+            
+            await BaseEntityRepository.AddAsync(entity);
+
+            return await GetByIdAsync(entity.Id);
+        }
+
         public override async Task<IDataResult<ICollection<StudentScoreGetDto>>> GetAllAsync()
         {
             var studentScores = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Student, 
