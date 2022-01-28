@@ -1,6 +1,7 @@
 using AutoMapper;
 using Core.Business.DTOs.Lesson;
 using Core.Business.DTOs.Student;
+using Core.Business.DTOs.StudentScore;
 using Core.Business.DTOs.Teacher;
 using Domain;
 
@@ -34,6 +35,13 @@ namespace Business
             CreateMap<Lesson, LessonGetDto>();
             CreateMap<LessonDto, Lesson>();
             CreateMap<LessonDto, Lesson>();
+            
+            // StudentScore
+            CreateMap<StudentScore, StudentScoreGetDto>()
+                .ForMember(x => x.LessonName, x => x.MapFrom(y => y.Lesson.Name))
+                .ForMember(x => x.StudentName, x => x.MapFrom(y => y.Student.Person.FullName));
+            CreateMap<StudentScoreCreateDto, StudentScore>();
+            CreateMap<StudentScoreUpdateDto, StudentScore>();
         }
     }
 }

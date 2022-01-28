@@ -41,9 +41,8 @@ namespace Business.Utils
             {
                 return new ErrorDataResult<TEntityGetDto>(ex.Message);
             }
-            
-            var entityDto = Mapper.Map<TEntity, TEntityGetDto>(entity);
-            return new SuccessDataResult<TEntityGetDto>(entityDto);
+
+            return await GetByIdAsync(entity.Id);
         }
 
         public virtual async Task<IDataResult<TEntityGetDto>> UpdateAsync(Guid id, TEntityUpdateDto input)
@@ -66,9 +65,7 @@ namespace Business.Utils
                 return new ErrorDataResult<TEntityGetDto>(ex.Message);
             }
 
-            var entityDto = Mapper.Map<TEntity, TEntityGetDto>(updatedEntity);
-            
-            return new SuccessDataResult<TEntityGetDto>(entityDto);
+            return await GetByIdAsync(id);
         }
 
         public virtual async Task<IResult> DeleteByIdAsync(Guid id)

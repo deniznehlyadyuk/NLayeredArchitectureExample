@@ -36,6 +36,7 @@ namespace WebAPI
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
             services.AddScoped<ILessonService, LessonManager>();
             services.AddScoped<ITeacherService, TeacherManager>();
+            services.AddScoped<IStudentScoreService, StudentScoreManager>();
 
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new SchoolAutoMapperProfile()); });
             var mapper = mappingConfig.CreateMapper();
