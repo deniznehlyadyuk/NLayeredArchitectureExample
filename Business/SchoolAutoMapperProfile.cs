@@ -25,7 +25,8 @@ namespace Business
             CreateMap<Teacher, TeacherGetDto>()
                 .ForMember(x => x.BornDate, x => x.MapFrom(y => y.Person.BornDate))
                 .ForMember(x => x.FullName, x => x.MapFrom(y => y.Person.FullName))
-                .ForMember(x => x.IdentityNumber, x => x.MapFrom(y => y.Person.IdentityNumber));
+                .ForMember(x => x.IdentityNumber, x => x.MapFrom(y => y.Person.IdentityNumber))
+                .ForMember(x => x.LessonName, x => x.MapFrom(y => y.Lesson.Name));
             CreateMap<TeacherCreateDto, Teacher>();
             CreateMap<TeacherUpdateDto, Teacher>();
             CreateMap<TeacherCreateDto, Person>();
