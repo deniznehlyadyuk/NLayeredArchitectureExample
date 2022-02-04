@@ -6,7 +6,6 @@ using AutoMapper;
 using Business.Abstract;
 using Business.Utils;
 using Core.Business.DTOs.StudentScore;
-using Core.DataAccess;
 using Core.Utils.Results;
 using DataAccess;
 using Domain;
@@ -26,7 +25,7 @@ namespace Business.Concrete
             
             var entity = Mapper.Map<StudentScoreCreateDto, StudentScore>(input);
             
-            var scores = await BaseEntityRepository.GetListWithIncludeAsync(x => x.StudentId == input.StudentId);
+            var scores = await BaseEntityRepository.GetListAsync(x => x.StudentId == input.StudentId);
 
             foreach (var score in scores)
             {
@@ -49,6 +48,21 @@ namespace Business.Concrete
             return new SuccessDataResult<ICollection<StudentScoreGetDto>>(studentScoreDtos);
         }
 
+   
+
+        public async Task<float> GeneralAverageLesson(Guid lesson_id)
+        {
+            var studentScores = await BaseEntityRepository.GetListAsync(x => x.LessonId == lesson_id);
+            studentScores.ToList();
+            float sum = 0;
+            foreach (var score in studentScores)
+            {
+                sum += score.Score;
+            }
+
+            return sum / studentScores.Count;
+        }
+
         public override async Task<IDataResult<StudentScoreGetDto>> GetByIdAsync(Guid id)
         {
             var studentScore = await BaseEntityRepository.GetWithIncludeAsync(x => x.Id == id, x => x.Student,
@@ -63,5 +77,7 @@ namespace Business.Concrete
 
             return new SuccessDataResult<StudentScoreGetDto>(studentScoreDto);
         }
+        
+        
     }
 }
