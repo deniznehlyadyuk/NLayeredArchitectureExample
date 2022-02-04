@@ -88,7 +88,7 @@ namespace Business.Concrete
         
         public override async Task<IDataResult<TeacherGetDto>> GetByIdAsync(Guid id)
         {
-            var teacher = await BaseEntityRepository.GetWithIncludeAsync(x => x.Id == id, x => x.Person);
+            var teacher = await BaseEntityRepository.GetWithIncludeAsync(x => x.Id == id, x => x.Person,x=>x.Lesson);
 
             if (teacher == null)
             {
@@ -101,7 +101,7 @@ namespace Business.Concrete
 
         public override async Task<IDataResult<ICollection<TeacherGetDto>>> GetAllAsync()
         {
-            var teachers = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Person);
+            var teachers = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Person,x=>x.Lesson);
             var teacherDtos = Mapper.Map<List<Teacher>, List<TeacherGetDto>>(teachers.ToList());
             return new SuccessDataResult<ICollection<TeacherGetDto>>(teacherDtos);
         }

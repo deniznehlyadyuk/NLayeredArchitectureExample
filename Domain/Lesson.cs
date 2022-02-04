@@ -9,7 +9,9 @@ namespace Domain
         [MaxLength(48)]
         [Required]
         public string Name { get; set; }
-
+        
+        public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<StudentScore> StudentScores { get; set; }
+        public virtual ICollection<StudentLesson> StudentLessons { get; set; }
     }
 }
