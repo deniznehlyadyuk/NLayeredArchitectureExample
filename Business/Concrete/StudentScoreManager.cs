@@ -50,9 +50,9 @@ namespace Business.Concrete
 
    
 
-        public async Task<float> GeneralAverageLesson(Guid lesson_id)
+        public async Task<IDataResult<float>> GeneralAverageLesson(Guid lessonId)
         {
-            var studentScores = await BaseEntityRepository.GetListAsync(x => x.LessonId == lesson_id);
+            var studentScores = await BaseEntityRepository.GetListAsync(x => x.LessonId == lessonId);
             studentScores.ToList();
             float sum = 0;
             foreach (var score in studentScores)
@@ -60,8 +60,57 @@ namespace Business.Concrete
                 sum += score.Score;
             }
 
-            return sum / studentScores.Count;
+            return new SuccessDataResult<float>(sum / studentScores.Count);
         }
+       
+
+        public async Task<IDataResult<float>> StudentAllLessonAverage(Guid studentId, Guid lessonId)
+        {
+            var studentScores = await BaseEntityRepository.GetListAsync(x => x.StudentId == studentId);
+            studentScores.ToList();
+            var scores = studentScores.Where(x => x.LessonId == lessonId);
+            float sum = 0;
+            foreach (var score in scores)
+            {
+                sum += score.Score;
+            }
+
+            var total = sum / scores.Count();
+
+            return new SuccessDataResult<float>(total,$"{ lessonId} : {total} ");
+        }
+        public async Task<IDataResult<float>> StudentGeneralAverage(Guid studentId)
+        {
+            var studentScores = await BaseEntityRepository.GetListAsync(x => x.StudentId == studentId);
+            studentScores.ToList();
+            float sum = 0;
+            foreach (var score in studentScores)
+            {
+                sum += score.Score;
+            }
+            return new SuccessDataResult<float>(sum / studentScores.Count());
+        }
+
+        public async Task<IDataResult<StudentScoreGetDto>> GreatestStudentInOnelesson(Guid lessonId)
+        {
+            var studentScores = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Student, 
+                x => x.Student.Person, x => x.Lesson);
+            var greatestScore = studentScores.Where(x => x.Score != null).OrderByDescending(x => x.Score)
+                .FirstOrDefault();
+            var studentScoreDto = Mapper.Map<StudentScore, StudentScoreGetDto>(greatestScore);
+            return new SuccessDataResult<StudentScoreGetDto>(studentScoreDto);
+        }
+
+        public async Task<IDataResult<StudentScoreGetDto>> WorstStudentInOneLesson(Guid lessonId)
+        {
+            var studentScores = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Student, 
+                x => x.Student.Person, x => x.Lesson);
+            var greatestScore = studentScores.Where(x => x.Score != null).OrderByDescending(x => x.Score).Reverse()
+                .FirstOrDefault();
+            var studentScoreDto = Mapper.Map<StudentScore, StudentScoreGetDto>(greatestScore);
+            return new SuccessDataResult<StudentScoreGetDto>(studentScoreDto);
+        }
+        
 
         public override async Task<IDataResult<StudentScoreGetDto>> GetByIdAsync(Guid id)
         {
@@ -77,6 +126,7 @@ namespace Business.Concrete
 
             return new SuccessDataResult<StudentScoreGetDto>(studentScoreDto);
         }
+        
         
         
     }

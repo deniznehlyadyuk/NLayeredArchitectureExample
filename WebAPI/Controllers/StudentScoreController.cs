@@ -21,5 +21,30 @@ namespace WebAPI.Controllers
             var result = await _scoreService.GeneralAverageLesson(lessonId);
             return Ok(result);
         }
+      
+        [HttpGet("/{lessonId:guid}/StudentAllLessonAverage")]
+        public async Task<IActionResult> StudentAllLessonAverage(Guid studentId, Guid lessonId)
+        {
+            var result = await _scoreService.StudentAllLessonAverage(studentId, lessonId);
+            return Ok(result);
+        }
+        [HttpGet("/{studentId:guid}/StudentGeneralAverage")]
+        public async Task<IActionResult> StudentGeneralAverage(Guid studentId)
+        {
+            var result = await _scoreService.StudentGeneralAverage(studentId);
+            return Ok(result);
+        }
+        [HttpGet("/{lessonId:guid}/GreatestStudentInOneLesson")]
+        public async Task<IActionResult> GreatestStudentInOneLesson(Guid lessonId)
+        {
+            var result = await _scoreService.GreatestStudentInOnelesson( lessonId);
+            return Ok(result);
+        }
+        [HttpGet("/{lessonId:guid}/WorstStudentInOneLesson")]
+        public async Task<IActionResult> WorstStudentInOneLesson( Guid lessonId)
+        {
+            var result = await _scoreService.WorstStudentInOneLesson(lessonId);
+            return Ok(result);
+        }
     }
 }
