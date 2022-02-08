@@ -16,6 +16,6 @@ namespace Domain
         [Required]
         public Guid LessonId { get; set; }
         public virtual Lesson Lesson { get; set; }
-        public virtual ICollection<StudentLesson> StudentLessons { get; set; }
+        public virtual ICollection<Group> Groups { get; set; }
     }
 }

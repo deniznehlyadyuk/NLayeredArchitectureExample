@@ -16,7 +16,8 @@ namespace Domain
         [MaxLength(6)]
         [Required]
         public string SchoolNumber { get; set; }
-
+        
         public virtual ICollection<StudentScore> StudentScores { get; set; }
+        public virtual ICollection<Group> Groups { get; set; }
     }
 }

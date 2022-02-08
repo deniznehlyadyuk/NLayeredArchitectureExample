@@ -12,6 +12,6 @@ namespace Domain
         
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<StudentScore> StudentScores { get; set; }
-        public virtual ICollection<StudentLesson> StudentLessons { get; set; }
+        public virtual ICollection<Group> Groups { get; set; }
     }
 }
