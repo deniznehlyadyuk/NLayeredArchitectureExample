@@ -1,4 +1,5 @@
 using AutoMapper;
+using Core.Business.DTOs.Group;
 using Core.Business.DTOs.Lesson;
 using Core.Business.DTOs.Student;
 using Core.Business.DTOs.StudentScore;
@@ -43,6 +44,12 @@ namespace Business
                 .ForMember(x => x.StudentName, x => x.MapFrom(y => y.Student.Person.FullName));
             CreateMap<StudentScoreCreateDto, StudentScore>();
             CreateMap<StudentScoreUpdateDto, StudentScore>();
+            // Group
+            CreateMap<GroupCreateDto, Group>();
+            CreateMap<Group, GroupGetDto>()
+                .ForMember(x => x.LessonName, x => x.MapFrom(y => y.Lesson.Name))
+                .ForMember(x => x.StudentName, x => x.MapFrom(y => y.Student.Person.FullName))
+                .ForMember(x => x.TeacherName, x => x.MapFrom(y => y.Teacher.Person.FullName));
         }
     }
 }
