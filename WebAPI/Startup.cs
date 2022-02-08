@@ -30,13 +30,14 @@ namespace WebAPI
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "WebAPI", Version = "v1"}); });
             services.AddDbContext<SchoolContext>(options =>
             {
-                options.UseNpgsql(Environment.GetEnvironmentVariable("EISTATISTIK_CONNECTION_STRING"));
+                options.UseNpgsql(Environment.GetEnvironmentVariable("UYS_CONNECTION_STRING"));
             });
             services.AddScoped<IStudentService, StudentManager>();
             services.AddScoped<IUnitOfWorks, UnitOfWork>();
             services.AddScoped<ILessonService, LessonManager>();
             services.AddScoped<ITeacherService, TeacherManager>();
             services.AddScoped<IStudentScoreService, StudentScoreManager>();
+            services.AddScoped<IGroupService, GroupManager>();
 
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new SchoolAutoMapperProfile()); });
             var mapper = mappingConfig.CreateMapper();
