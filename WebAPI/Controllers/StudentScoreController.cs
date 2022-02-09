@@ -22,10 +22,10 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
       
-        [HttpGet("/{lessonId:guid}/StudentAllLessonAverage")]
-        public async Task<IActionResult> StudentAllLessonAverage(Guid studentId, Guid lessonId)
+        [HttpGet("/{studentId:guid}/StudentAllLessonAverage")]
+        public async Task<IActionResult> StudentAllLessonAverage(Guid studentId)
         {
-            var result = await _scoreService.StudentAllLessonAverage(studentId, lessonId);
+            var result = await _scoreService.StudentAllLessonAverage(studentId);
             return Ok(result);
         }
         [HttpGet("/{studentId:guid}/StudentGeneralAverage")]

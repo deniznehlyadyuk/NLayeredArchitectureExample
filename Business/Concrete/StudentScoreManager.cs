@@ -64,20 +64,14 @@ namespace Business.Concrete
         }
        
 
-        public async Task<IDataResult<float>> StudentAllLessonAverage(Guid studentId, Guid lessonId)
+        public async Task<IDataResult<float>> StudentAllLessonAverage(Guid studentId)
         {
             var studentScores = await BaseEntityRepository.GetListAsync(x => x.StudentId == studentId);
-            studentScores.ToList();
-            var scores = studentScores.Where(x => x.LessonId == lessonId);
-            float sum = 0;
-            foreach (var score in scores)
-            {
-                sum += score.Score;
-            }
 
-            var total = sum / scores.Count();
+            var generalAverage = studentScores.GroupBy(x => x.LessonId, x => x.Score, 
+                (lessonId, scores) => scores.Average()).Average();
 
-            return new SuccessDataResult<float>(total,$"{ lessonId} : {total} ");
+            return new SuccessDataResult<float>(generalAverage);
         }
         public async Task<IDataResult<float>> StudentGeneralAverage(Guid studentId)
         {
