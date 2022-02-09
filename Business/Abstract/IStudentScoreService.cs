@@ -11,7 +11,7 @@ namespace Business.Abstract
     {
         public Task<IDataResult<float>> GeneralAverageLesson(Guid lesson_id);
      
-        public Task<IDataResult<float>> StudentAllLessonAverage(Guid studentId);
+        public Task<IDataResult<object>> StudentAllLessonAverage(Guid studentId);
         public Task<IDataResult<float>> StudentGeneralAverage(Guid studentId);
         public Task<IDataResult<StudentScoreGetDto>> GreatestStudentInOnelesson(Guid lessonId);
         public Task<IDataResult<StudentScoreGetDto>> WorstStudentInOneLesson(Guid lessonId);

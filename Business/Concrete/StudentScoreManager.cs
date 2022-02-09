@@ -64,25 +64,29 @@ namespace Business.Concrete
         }
        
 
-        public async Task<IDataResult<float>> StudentAllLessonAverage(Guid studentId)
+        public async Task<IDataResult<object>> StudentAllLessonAverage(Guid studentId)
         {
-            var studentScores = await BaseEntityRepository.GetListAsync(x => x.StudentId == studentId);
+            var studentScores = await BaseEntityRepository
+                .GetListWithIncludeAsync(x => x.StudentId == studentId, x => x.Lesson);
 
-            var generalAverage = studentScores.GroupBy(x => x.LessonId, x => x.Score, 
-                (lessonId, scores) => scores.Average()).Average();
+            var generalAverage = studentScores.GroupBy(x => x.Lesson, x => x.Score, 
+                (lesson, scores) => new
+                {
+                    LessonName = lesson.Name, 
+                    Average = scores.Average()
+                });
 
-            return new SuccessDataResult<float>(generalAverage);
+            return new SuccessDataResult<object>(generalAverage);
         }
         public async Task<IDataResult<float>> StudentGeneralAverage(Guid studentId)
         {
-            var studentScores = await BaseEntityRepository.GetListAsync(x => x.StudentId == studentId);
-            studentScores.ToList();
-            float sum = 0;
-            foreach (var score in studentScores)
-            {
-                sum += score.Score;
-            }
-            return new SuccessDataResult<float>(sum / studentScores.Count());
+            var studentScores = await BaseEntityRepository
+                .GetListWithIncludeAsync(x => x.StudentId == studentId, x => x.Lesson);
+
+            var generalAverage = studentScores.GroupBy(x => x.Lesson, x => x.Score, 
+                (lesson, scores) => scores.Average()).Average();
+
+            return new SuccessDataResult<float>(generalAverage);
         }
 
         public async Task<IDataResult<StudentScoreGetDto>> GreatestStudentInOnelesson(Guid lessonId)
