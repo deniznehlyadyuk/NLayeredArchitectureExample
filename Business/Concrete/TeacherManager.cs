@@ -16,10 +16,12 @@ namespace Business.Concrete
     public class TeacherManager : CrudEntityManager<Teacher,TeacherGetDto,TeacherCreateDto,TeacherUpdateDto> , ITeacherService
     {
         private readonly IEntityRepository<Person> _personRepository;
+        private readonly IEntityRepository<StudentScore> _studentScoreRepository;
 
         public TeacherManager(IUnitOfWorks unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
             _personRepository = unitOfWork.GenerateRepository<Person>();
+            _studentScoreRepository = unitOfWork.GenerateRepository<StudentScore>();
         }
         
         public override async Task<IDataResult<TeacherGetDto>> AddAsync(TeacherCreateDto input)
@@ -104,6 +106,48 @@ namespace Business.Concrete
             var teachers = await BaseEntityRepository.GetListWithIncludeAsync(null, x => x.Person, x => x.Lesson);
             var teacherDtos = Mapper.Map<List<Teacher>, List<TeacherGetDto>>(teachers.ToList());
             return new SuccessDataResult<ICollection<TeacherGetDto>>(teacherDtos);
+        }
+
+        public async Task<IDataResult<object>> GreatestTeacherForAverage()
+        {
+            var studentScores = await _studentScoreRepository.GetListWithIncludeAsync(null, x => x.Lesson);
+            var greatestLeesonForAverage = studentScores.GroupBy(x => x.Lesson, x => x.Score, (lesson, scores) => new
+            {
+                LessonId = lesson.Id,
+                LessonName = lesson.Name,
+                AverageScore = scores.Average()
+            }).OrderByDescending(x => x.AverageScore).First();
+
+            var teacher = await BaseEntityRepository
+                .GetWithIncludeAsync(x => x.LessonId == greatestLeesonForAverage.LessonId, x => x.Person);
+
+            return new SuccessDataResult<object>(new
+            {
+                Name = teacher.Person.FullName,
+                LessonName = greatestLeesonForAverage.LessonName,
+                Average = greatestLeesonForAverage.AverageScore
+            });
+        }
+
+        public async Task<IDataResult<object>> WorstTeacherForAverage()
+        {
+            var studentScores = await _studentScoreRepository.GetListWithIncludeAsync(null, x => x.Lesson);
+            var worstLeesonForAverage = studentScores.GroupBy(x => x.Lesson, x => x.Score, (lesson, scores) => new
+            {
+                LessonId = lesson.Id,
+                LessonName = lesson.Name,
+                AverageScore = scores.Average()
+            }).OrderBy(x => x.AverageScore).First();
+
+            var teacher = await BaseEntityRepository
+                .GetWithIncludeAsync(x => x.LessonId == worstLeesonForAverage.LessonId, x => x.Person);
+
+            return new SuccessDataResult<object>(new
+            {
+                Name = teacher.Person.FullName,
+                LessonName = worstLeesonForAverage.LessonName,
+                Average = worstLeesonForAverage.AverageScore
+            });
         }
     } 
 }
